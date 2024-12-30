@@ -42,6 +42,11 @@
         const cursor = document.querySelector('.blinking-cursor');
         const output = document.getElementById('output');
 
+        // Add this function to handle scrolling
+        function scrollToBottom() {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
         // Typewriter animation
         function typeText(text, callback) {
             let index = 0;
@@ -49,6 +54,7 @@
                 if (index < text.length) {
                     input.value += text[index];
                     updateCursor();
+                    scrollToBottom();
                     index++;
                 } else {
                     clearInterval(interval);
@@ -68,6 +74,7 @@
             }
             input.value = '';
             updateCursor(); // Reset cursor position
+            scrollToBottom();
         }
 
         function simulateEnterWithText(command, commandOutput = "") {
@@ -77,27 +84,29 @@
             }
             input.value = '';
             updateCursor(); // Reset cursor position
+            scrollToBottom();
         }
 
-		function navigateTo(page, commandRaw = "") {
-			const pageText = {
-				"About": "Welcome to the About section. Here is some information about me.",
-				"Research": "This section highlights my research work and publications.",
-				"Code": "Explore my coding projects and repositories here.",
-				"Social": "    <button class='button' onclick=\"window.open('https://twitter.com/ML_BenWalker')\">Twitter</button>    <button class='button' onclick=\"window.open('https://bsky.app/profile/benjamincwalker.bsky.social')\">Bluesky</button>    <button class='button' onclick=\"window.open('https://www.linkedin.com/in/benjamin-walker-3880771b9/')\">LinkedIn</button>    <button class='button' onclick=\"window.open('https://github.com/Benjamin-Walker')\">GitHub</button>"
-			};
-			 if (commandRaw === "") {
-				 commandRaw = page;
-			 }
+        function navigateTo(page, commandRaw = "") {
+            const pageText = {
+                "About": "Welcome to the About section. Here is some information about me.",
+                "Research": "This section highlights my research work and publications.",
+                "Code": "Explore my coding projects and repositories here.",
+                "Social": "    <button class='button' onclick=\"window.open('https://twitter.com/ML_BenWalker')\">Twitter</button>    <button class='button' onclick=\"window.open('https://bsky.app/profile/benjamincwalker.bsky.social')\">Bluesky</button>    <button class='button' onclick=\"window.open('https://www.linkedin.com/in/benjamin-walker-3880771b9/')\">LinkedIn</button>    <button class='button' onclick=\"window.open('https://github.com/Benjamin-Walker')\">GitHub</button>"
+            };
+            if (commandRaw === "") {
+                commandRaw = page;
+            }
 
-			if (page === "CV") {
-				output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
-				window.open('CV.pdf', '_blank'); // Open the PDF in a new tab
-			} else {
-				simulateEnterWithText(commandRaw, pageText[page]);
-			}
-			input.focus(); // Refocus the input element
-		}
+            if (page === "CV") {
+                output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
+                window.open('CV.pdf', '_blank');
+            } else {
+                simulateEnterWithText(commandRaw, pageText[page]);
+            }
+            input.focus();
+            scrollToBottom();
+        }
 
         function handleSocialCommand(commandRaw) {
             const command = commandRaw.toLowerCase();
@@ -113,7 +122,13 @@
                 output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
                 input.value = '';
                 updateCursor();
+                scrollToBottom();
             }
+        }
+
+		// Add clear function
+        function clearTerminal() {
+            output.innerHTML = '';
         }
 
         // Initial animation
@@ -128,61 +143,64 @@
             });
         };
 
-		input.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter') {
-				const commandRaw = input.value.trim();
-				const command = commandRaw.toLowerCase();
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const commandRaw = input.value.trim();
+                const command = commandRaw.toLowerCase();
 
-				const commands = {
-					"pages": "Displays all available pages.",
-					"about": "Provides information about me.",
-					"cv": "Opens my CV in a new tab.",
-					"research": "Shows my research work and publications.",
-					"code": "Lists my coding projects.",
-					"social": "Displays social media links.",
-					"twitter": "Opens my Twitter profile.",
-					"bluesky": "Opens my Bluesky profile.",
-					"linkedin": "Opens my LinkedIn profile.",
-					"github": "Opens my GitHub profile.",
-					"exit": "Reloads the website.",
-					"help": "Displays this help message with a list of all commands."
-				};
+                const commands = {
+                    "pages": "Displays all available pages.",
+                    "about": "Provides information about me.",
+                    "cv": "Opens my CV in a new tab.",
+                    "research": "Shows my research work and publications.",
+                    "code": "Lists my coding projects.",
+                    "social": "Displays social media links.",
+                    "twitter": "Opens my Twitter profile.",
+                    "bluesky": "Opens my Bluesky profile.",
+                    "linkedin": "Opens my LinkedIn profile.",
+                    "github": "Opens my GitHub profile.",
+					"clear": "Clears the terminal screen.",
+                    "exit": "Reloads the website.",
+                    "help": "Displays this help message with a list of all commands."
+                };
 
-				if (command === "pages") {
-					simulateEnterWithButtons("    About    CV    Research    Code    Social");
-				} else if (command === "cv") {
-					navigateTo("CV", commandRaw);
-				} else if (command in {
-					"about": true,
-					"research": true,
-					"code": true,
-					"social": true
-				}) {
-					navigateTo(command.charAt(0).toUpperCase() + command.slice(1), commandRaw);
-				} else if (command in {
-					"twitter": true,
-					"bluesky": true,
-					"linkedin": true,
-					"github": true
-				}) {
-					handleSocialCommand(commandRaw);
-				} else if (command === "exit") {
-					output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
-					location.reload(); // Reload the page
-				} else if (command === "help") {
-					const helpMessage = Object.entries(commands)
-						.map(([cmd, desc]) => `- ${cmd}: ${desc}`)
-						.join("\n");
-					simulateEnterWithText("help", helpMessage);
-				} else {
-					// Fallback for unrecognised commands
-					simulateEnterWithText(commandRaw, "Command not recognised. Type 'help' to get a list of available commands.");
-				}
+				if (command === "clear") {
+                    clearTerminal();
+                } else if (command === "pages") {
+                    simulateEnterWithButtons("    About    CV    Research    Code    Social");
+                } else if (command === "cv") {
+                    navigateTo("CV", commandRaw);
+                } else if (command in {
+                    "about": true,
+                    "research": true,
+                    "code": true,
+                    "social": true
+                }) {
+                    navigateTo(command.charAt(0).toUpperCase() + command.slice(1), commandRaw);
+                } else if (command in {
+                    "twitter": true,
+                    "bluesky": true,
+                    "linkedin": true,
+                    "github": true
+                }) {
+                    handleSocialCommand(commandRaw);
+                } else if (command === "exit") {
+                    output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
+                    location.reload(); // Reload the page
+                } else if (command === "help") {
+                    const helpMessage = Object.entries(commands)
+                        .map(([cmd, desc]) => `- ${cmd}: ${desc}`)
+                        .join("\n");
+                    simulateEnterWithText("help", helpMessage);
+                } else {
+                    // Fallback for unrecognised commands
+                    simulateEnterWithText(commandRaw, "Command not recognised. Type 'help' to get a list of available commands.");
+                }
 
-				input.value = '';
-				updateCursor(); // Reset cursor position
-			}
-		});
+                input.value = '';
+                updateCursor(); // Reset cursor position
+            }
+        });
 
         input.addEventListener('input', updateCursor);
 
@@ -202,11 +220,10 @@
         // Initialize cursor position
         updateCursor();
 
-		// Refocus input on body click
+        // Refocus input on body click
         document.body.addEventListener('click', () => {
             input.focus();
         });
     </script>
 </body>
 </html>
-
