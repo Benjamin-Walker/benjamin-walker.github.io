@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ben's Terminal</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .button {
+            display: inline-block;
+            color: #0f0;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 2px 5px;
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        .button:hover {
+            color: #000;
+            background-color: #0f0;
+        }
+
+        #output div {
+            white-space: pre-wrap; /* Preserve whitespace */
+        }
+    </style>
 </head>
 <body>
     <div class="terminal">
@@ -20,10 +42,109 @@
         const cursor = document.querySelector('.blinking-cursor');
         const output = document.getElementById('output');
 
+        // Typewriter animation
+        function typeText(text, callback) {
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < text.length) {
+                    input.value += text[index];
+                    updateCursor();
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    if (callback) callback();
+                }
+            }, 100); // Adjust speed here (milliseconds per character)
+        }
+
+        function simulateEnterWithButtons(commandOutput = "") {
+            const command = input.value;
+            output.innerHTML += `<div><span class="prompt">></span> ${command}</div>`;
+            if (commandOutput) {
+                const links = commandOutput.split("    ").map(page => {
+                    return `<button class="button" onclick="navigateTo('${page}')">${page}</button>`;
+                }).join("    ");
+                output.innerHTML += `<div>${links}</div>`;
+            }
+            input.value = '';
+            updateCursor(); // Reset cursor position
+        }
+
+        function simulateEnterWithText(command, commandOutput = "") {
+            output.innerHTML += `<div><span class="prompt">></span> ${command}</div>`;
+            if (commandOutput) {
+                output.innerHTML += `<div>${commandOutput}</div>`;
+            }
+            input.value = '';
+            updateCursor(); // Reset cursor position
+        }
+
+        function navigateTo(page) {
+            const pageText = {
+                "About": "Welcome to the About section. Here is some information about me.",
+                "CV": "Here is my CV with professional experience and education.",
+                "Research": "This section highlights my research work and publications.",
+                "Code": "Explore my coding projects and repositories here.",
+                "Social": "    <button class='button' onclick=\"window.open('https://twitter.com/ML_BenWalker')\">Twitter</button>    <button class='button' onclick=\"window.open('https://bsky.app/profile/benjamincwalker.bsky.social')\">Bluesky</button>    <button class='button' onclick=\"window.open('https://www.linkedin.com/in/benjamin-walker-3880771b9/')\">LinkedIn</button>    <button class='button' onclick=\"window.open('https://github.com/Benjamin-Walker')\">GitHub</button>"
+            };
+
+            simulateEnterWithText(page, pageText[page]);
+            input.focus(); // Refocus the input element
+        }
+
+        function handleSocialCommand(commandRaw) {
+            const command = commandRaw.toLowerCase();
+            const socialLinks = {
+                "twitter": "https://twitter.com/ML_BenWalker",
+                "bluesky": "https://bsky.app/profile/benjamincwalker.bsky.social",
+                "linkedin": "https://www.linkedin.com/in/benjamin-walker-3880771b9/",
+                "github": "https://github.com/Benjamin-Walker"
+            };
+
+            if (command in socialLinks) {
+                window.open(socialLinks[command]);
+                output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
+                input.value = '';
+                updateCursor();
+            }
+        }
+
+        // Initial animation
+        window.onload = () => {
+            typeText("Welcome to Benjamin Walker's portfolio", () => {
+                simulateEnterWithButtons();
+                setTimeout(() => {
+                    typeText("pages", () => {
+                        simulateEnterWithButtons("    About    CV    Research    Code    Social");
+                    });
+                }, 500);
+            });
+        };
+
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                const command = input.value;
-                output.innerHTML += `<div><span class="prompt">></span> ${command}</div>`;
+                const commandRaw = input.value.trim();
+                const command = commandRaw.toLowerCase();
+                if (command === "pages") {
+                    simulateEnterWithButtons("    About    CV    Research    Code    Social");
+                } else if (command in {
+                    "about": true,
+                    "cv": true,
+                    "research": true,
+                    "code": true,
+                    "social": true
+                }) {
+                    navigateTo(command.charAt(0).toUpperCase() + command.slice(1));
+                } else if (command in {
+                    "twitter": true,
+                    "bluesky": true,
+                    "linkedin": true,
+                    "github": true
+                }) {
+                    handleSocialCommand(commandRaw);
+                } else {
+                    output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
+                }
                 input.value = '';
                 updateCursor(); // Reset cursor position
             }
