@@ -1,1 +1,52 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ben's Terminal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="terminal">
+        <div id="output"></div>
+        <div class="input-line">
+            <span class="prompt">></span>
+            <input type="text" id="input" autofocus style="width: 40ch;">
+            <span class="blinking-cursor"></span>
+        </div>
+    </div>
+    <script>
+        const input = document.getElementById('input');
+        const cursor = document.querySelector('.blinking-cursor');
+        const output = document.getElementById('output');
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const command = input.value;
+                output.innerHTML += `<div><span class="prompt">></span> ${command}</div>`;
+                input.value = '';
+                updateCursor(); // Reset cursor position
+            }
+        });
+
+        input.addEventListener('input', updateCursor);
+
+        function updateCursor() {
+            const textWidth = getTextWidth(input.value, window.getComputedStyle(input).font);
+            cursor.style.transform = `translateX(${textWidth}px)`;
+        }
+
+        // Helper function to calculate text width
+        function getTextWidth(text, font) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            context.font = font;
+            return context.measureText(text).width;
+        }
+
+        // Initialize cursor position
+        updateCursor();
+    </script>
+</body>
+</html>
+
