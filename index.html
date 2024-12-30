@@ -133,6 +133,21 @@
 				const commandRaw = input.value.trim();
 				const command = commandRaw.toLowerCase();
 
+				const commands = {
+					"pages": "Displays all available pages.",
+					"about": "Provides information about me.",
+					"cv": "Opens my CV in a new tab.",
+					"research": "Shows my research work and publications.",
+					"code": "Lists my coding projects.",
+					"social": "Displays social media links.",
+					"twitter": "Opens my Twitter profile.",
+					"bluesky": "Opens my Bluesky profile.",
+					"linkedin": "Opens my LinkedIn profile.",
+					"github": "Opens my GitHub profile.",
+					"exit": "Reloads the website.",
+					"help": "Displays this help message with a list of all commands."
+				};
+
 				if (command === "pages") {
 					simulateEnterWithButtons("    About    CV    Research    Code    Social");
 				} else if (command === "cv") {
@@ -154,8 +169,14 @@
 				} else if (command === "exit") {
 					output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
 					location.reload(); // Reload the page
+				} else if (command === "help") {
+					const helpMessage = Object.entries(commands)
+						.map(([cmd, desc]) => `- ${cmd}: ${desc}`)
+						.join("\n");
+					simulateEnterWithText("help", helpMessage);
 				} else {
-					output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
+					// Fallback for unrecognised commands
+					simulateEnterWithText(commandRaw, "Command not recognised. Type 'help' to get a list of available commands.");
 				}
 
 				input.value = '';
