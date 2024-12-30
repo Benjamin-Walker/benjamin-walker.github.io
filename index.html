@@ -79,18 +79,25 @@
             updateCursor(); // Reset cursor position
         }
 
-        function navigateTo(page) {
-            const pageText = {
-                "About": "Welcome to the About section. Here is some information about me.",
-                "CV": "Here is my CV with professional experience and education.",
-                "Research": "This section highlights my research work and publications.",
-                "Code": "Explore my coding projects and repositories here.",
-                "Social": "    <button class='button' onclick=\"window.open('https://twitter.com/ML_BenWalker')\">Twitter</button>    <button class='button' onclick=\"window.open('https://bsky.app/profile/benjamincwalker.bsky.social')\">Bluesky</button>    <button class='button' onclick=\"window.open('https://www.linkedin.com/in/benjamin-walker-3880771b9/')\">LinkedIn</button>    <button class='button' onclick=\"window.open('https://github.com/Benjamin-Walker')\">GitHub</button>"
-            };
+		function navigateTo(page, commandRaw = "") {
+			const pageText = {
+				"About": "Welcome to the About section. Here is some information about me.",
+				"Research": "This section highlights my research work and publications.",
+				"Code": "Explore my coding projects and repositories here.",
+				"Social": "    <button class='button' onclick=\"window.open('https://twitter.com/ML_BenWalker')\">Twitter</button>    <button class='button' onclick=\"window.open('https://bsky.app/profile/benjamincwalker.bsky.social')\">Bluesky</button>    <button class='button' onclick=\"window.open('https://www.linkedin.com/in/benjamin-walker-3880771b9/')\">LinkedIn</button>    <button class='button' onclick=\"window.open('https://github.com/Benjamin-Walker')\">GitHub</button>"
+			};
+			 if (commandRaw === "") {
+				 commandRaw = page;
+			 }
 
-            simulateEnterWithText(page, pageText[page]);
-            input.focus(); // Refocus the input element
-        }
+			if (page === "CV") {
+				output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
+				window.open('CV.pdf', '_blank'); // Open the PDF in a new tab
+			} else {
+				simulateEnterWithText(commandRaw, pageText[page]);
+			}
+			input.focus(); // Refocus the input element
+		}
 
         function handleSocialCommand(commandRaw) {
             const command = commandRaw.toLowerCase();
@@ -121,34 +128,40 @@
             });
         };
 
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const commandRaw = input.value.trim();
-                const command = commandRaw.toLowerCase();
-                if (command === "pages") {
-                    simulateEnterWithButtons("    About    CV    Research    Code    Social");
-                } else if (command in {
-                    "about": true,
-                    "cv": true,
-                    "research": true,
-                    "code": true,
-                    "social": true
-                }) {
-                    navigateTo(command.charAt(0).toUpperCase() + command.slice(1));
-                } else if (command in {
-                    "twitter": true,
-                    "bluesky": true,
-                    "linkedin": true,
-                    "github": true
-                }) {
-                    handleSocialCommand(commandRaw);
-                } else {
-                    output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
-                }
-                input.value = '';
-                updateCursor(); // Reset cursor position
-            }
-        });
+		input.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') {
+				const commandRaw = input.value.trim();
+				const command = commandRaw.toLowerCase();
+
+				if (command === "pages") {
+					simulateEnterWithButtons("    About    CV    Research    Code    Social");
+				} else if (command === "cv") {
+					navigateTo("CV", commandRaw);
+				} else if (command in {
+					"about": true,
+					"research": true,
+					"code": true,
+					"social": true
+				}) {
+					navigateTo(command.charAt(0).toUpperCase() + command.slice(1), commandRaw);
+				} else if (command in {
+					"twitter": true,
+					"bluesky": true,
+					"linkedin": true,
+					"github": true
+				}) {
+					handleSocialCommand(commandRaw);
+				} else if (command === "exit") {
+					output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
+					location.reload(); // Reload the page
+				} else {
+					output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
+				}
+
+				input.value = '';
+				updateCursor(); // Reset cursor position
+			}
+		});
 
         input.addEventListener('input', updateCursor);
 
@@ -167,6 +180,11 @@
 
         // Initialize cursor position
         updateCursor();
+
+		// Refocus input on body click
+        document.body.addEventListener('click', () => {
+            input.focus();
+        });
     </script>
 </body>
 </html>
