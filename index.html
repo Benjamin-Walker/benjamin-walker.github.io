@@ -54,7 +54,7 @@
                     clearInterval(interval);
                     if (callback) callback();
                 }
-            }, 100); // Adjust speed here (milliseconds per character)
+            }, 60); // Adjust speed here (milliseconds per character)
         }
 
         function simulateEnterWithButtons(commandOutput = "") {
@@ -111,7 +111,7 @@
 
         // Initial animation
         window.onload = () => {
-            typeText("Welcome to Benjamin Walker's portfolio", () => {
+            typeText("Welcome to Benjamin Walker's website", () => {
                 simulateEnterWithButtons();
                 setTimeout(() => {
                     typeText("pages", () => {
