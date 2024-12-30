@@ -1,32 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- Head section remains the same -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ben's Terminal</title>
+    <title>Ben's Website</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .button {
-            display: inline-block;
-            color: #0f0;
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            padding: 2px 5px;
-            font-family: inherit;
-            font-size: inherit;
-        }
-
-        .button:hover {
-            color: #000;
-            background-color: #0f0;
-        }
-
-        #output div {
-            white-space: pre-wrap; /* Preserve whitespace */
-        }
-    </style>
 </head>
 <body>
     <div class="terminal">
@@ -42,12 +21,14 @@
         const cursor = document.querySelector('.blinking-cursor');
         const output = document.getElementById('output');
 
-        // Add this function to handle scrolling
+        function clearTerminal() {
+            output.innerHTML = '';
+        }
+
         function scrollToBottom() {
             window.scrollTo(0, document.body.scrollHeight);
         }
 
-        // Typewriter animation
         function typeText(text, callback) {
             let index = 0;
             const interval = setInterval(() => {
@@ -60,7 +41,7 @@
                     clearInterval(interval);
                     if (callback) callback();
                 }
-            }, 60); // Adjust speed here (milliseconds per character)
+            }, 60);
         }
 
         function simulateEnterWithButtons(commandOutput = "") {
@@ -73,7 +54,7 @@
                 output.innerHTML += `<div>${links}</div>`;
             }
             input.value = '';
-            updateCursor(); // Reset cursor position
+            updateCursor();
             scrollToBottom();
         }
 
@@ -83,15 +64,68 @@
                 output.innerHTML += `<div>${commandOutput}</div>`;
             }
             input.value = '';
-            updateCursor(); // Reset cursor position
+            updateCursor();
             scrollToBottom();
         }
 
         function navigateTo(page, commandRaw = "") {
             const pageText = {
-                "About": "Welcome to the About section. Here is some information about me.",
-                "Research": "This section highlights my research work and publications.",
-                "Code": "Explore my coding projects and repositories here.",
+				"About": `<u>Current Position</u>:
+I am a PhD student in Mathematics at the University of Oxford, supervised by Terry Lyons. I currently hold a Lectureship in Applied Mathematics at Balliol College.
+<u>Research Interests</u>:
+My research focuses on machine learning for sequential data, particularly in developing theoretically principled approaches to time series modeling. Additional interests include generative modelling and machine learning in healthcare.
+<u>Academic Background</u>:
+- DPhil Mathematics, University of Oxford (2022-2025)
+- MSc Mathematical Modelling and Scientific Computing, University of Oxford (2020-2021), Distinction
+- MMaths&Physics, University of Manchester (2016-2020), First Class Honours
+<u>Teaching Experience</u>:
+- Lecturer in Applied Mathematics at Balliol College
+- Course Author and Teacher for MSc MMSC Introduction to Python
+- Supervised multiple Master's theses, including a prize-winning dissertation and work published at Machine Learning for Healthcare
+<u>Awards and Recognition</u>:
+- 1st Place in the George B. Moody Physionet Challenge 2024
+- Publications at top ML conferences including ICML and NeurIPS
+- MMaths&Physics highest dissertation grade
+- Raised £7000 for Cancer Research UK hiking 942 miles from John O'Groats to Land's End`,
+                "Research": `My research interestes include time series, neural differential equations, generative modeling, and machine learning in healthcare. My recent publications include:
+1. <button class='button' onclick="window.open('https://arxiv.org/abs/2402.18512')">Log Neural Controlled Differential Equations: The Lie Brackets Make a Difference</button>
+   International Conference on Machine Learning (2024)
+   Authors: B. Walker, A. D. McLeod, T. Qin, Y. Cheng, H. Li, T. Lyons
+2. <button class='button' onclick="window.open('https://arxiv.org/abs/2402.19047')">Theoretical Foundations of Deep Selective State-Space Models</button>
+   Neural Information Processing Systems (2024)
+   Authors: N. M. Cirone, A. Orvieto, B. Walker, C. Salvi, T. Lyons
+3. <button class='button' onclick="window.open('https://cinc.org/archives/2024/pdf/CinC2024-097.pdf')">Combining Hough Transform and Deep Learning Approaches to Reconstruct ECG Signals From Printouts</button>
+   Computing in Cardiology (2024)
+   Authors: F. Krones, B. Walker, T. Lyons, A. Mahdi
+4. <button class='button' onclick="window.open('https://proceedings.mlr.press/v219/naseer23a.html')">ScoEHR: Generating Synthetic Electronic Health Records</button>
+   Machine Learning for Healthcare (2023)
+   Authors: A. A. Naseer, B. Walker, C. Landon, A. Ambrosy, M. Fudim, N. Wysham, B. Toro, S. Swaminathan, T. Lyons
+5. <button class='button' onclick="window.open('https://ieeexplore.ieee.org/abstract/document/10081848/')">Dual Bayesian ResNet: A Deep Learning Approach to Heart Murmur Detection</button>
+   Computing in Cardiology (2022)
+   Authors: B. Walker, F. Krones, I. Kiskin, G. Parsons, T. Lyons, A. Mahdi`,
+				                "Code": `My open-source projects are organized into the following categories:
+<u>Machine Learning Research</u>
+1. <button class='button' onclick="window.open('https://github.com/Benjamin-Walker/log-neural-cdes')">Log Neural CDEs</button>
+   Implementation of Log Neural Controlled Differential Equations (ICML 2024)
+   Key features: Efficient training of Neural CDEs using the Log-ODE method in Jax
+2. <button class='button' onclick="window.open('https://github.com/Benjamin-Walker/selective-ssms-and-linear-cdes')">SSMs and Linear NCDEs</button>
+   Theoretical Foundations of Deep Selective State-Space Models (NeurIPS 2024)
+   Key features: Linear CDEs and Selective SSMs in Jax
+<u>Healthcare Applications</u>
+3. <button class='button' onclick="window.open('https://github.com/Benjamin-Walker/heart-murmur-detection')">Heart Murmur Detection</button>
+   Dual Bayesian ResNet for Heart Murmur Detection from Phonocardiograms (CinC 2022)
+   Key features: Audio processing and Bayesian deep learning in PyTorch
+<u>Generative Models</u>
+4. <button class='button' onclick="window.open('https://github.com/Benjamin-Walker/diffrax-diffusion-models')">Diffrax Diffusion Models</button>
+   Score-based diffusion models implemented in JAX
+   Key Features: VP-SDE diffusion model
+<u>Personal Projects</u>
+5. <button class='button' onclick="window.open('https://github.com/Benjamin-Walker/live-vinyl-display')">Live Vinyl Display</button>
+   Real-time music recognition system for vinyl records
+   Key features: Audio fingerprinting, metadata retrieval, and live visualisation
+6. <button class='button' onclick="window.open('https://github.com/Benjamin-Walker/benjamin-walker.github.io')">Personal Website</button>
+   This website's source code
+   Key features: Terminal-style interface with responsive design`,
                 "Social": "    <button class='button' onclick=\"window.open('https://twitter.com/ML_BenWalker')\">Twitter</button>    <button class='button' onclick=\"window.open('https://bsky.app/profile/benjamincwalker.bsky.social')\">Bluesky</button>    <button class='button' onclick=\"window.open('https://www.linkedin.com/in/benjamin-walker-3880771b9/')\">LinkedIn</button>    <button class='button' onclick=\"window.open('https://github.com/Benjamin-Walker')\">GitHub</button>"
             };
             if (commandRaw === "") {
@@ -126,11 +160,6 @@
             }
         }
 
-		// Add clear function
-        function clearTerminal() {
-            output.innerHTML = '';
-        }
-
         // Initial animation
         window.onload = () => {
             typeText("Welcome to Benjamin Walker's website", () => {
@@ -159,12 +188,12 @@
                     "bluesky": "Opens my Bluesky profile.",
                     "linkedin": "Opens my LinkedIn profile.",
                     "github": "Opens my GitHub profile.",
-					"clear": "Clears the terminal screen.",
+                    "clear": "Clears the terminal screen.",
                     "exit": "Reloads the website.",
                     "help": "Displays this help message with a list of all commands."
                 };
 
-				if (command === "clear") {
+                if (command === "clear") {
                     clearTerminal();
                 } else if (command === "pages") {
                     simulateEnterWithButtons("    About    CV    Research    Code    Social");
@@ -186,19 +215,18 @@
                     handleSocialCommand(commandRaw);
                 } else if (command === "exit") {
                     output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
-                    location.reload(); // Reload the page
+                    location.reload();
                 } else if (command === "help") {
                     const helpMessage = Object.entries(commands)
                         .map(([cmd, desc]) => `- ${cmd}: ${desc}`)
                         .join("\n");
                     simulateEnterWithText("help", helpMessage);
                 } else {
-                    // Fallback for unrecognised commands
                     simulateEnterWithText(commandRaw, "Command not recognised. Type 'help' to get a list of available commands.");
                 }
 
                 input.value = '';
-                updateCursor(); // Reset cursor position
+                updateCursor();
             }
         });
 
@@ -209,7 +237,6 @@
             cursor.style.transform = `translateX(${textWidth}px)`;
         }
 
-        // Helper function to calculate text width
         function getTextWidth(text, font) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
@@ -217,10 +244,8 @@
             return context.measureText(text).width;
         }
 
-        // Initialize cursor position
         updateCursor();
 
-        // Refocus input on body click
         document.body.addEventListener('click', () => {
             input.focus();
         });
