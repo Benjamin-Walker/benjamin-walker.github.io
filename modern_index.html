@@ -27,7 +27,7 @@
     <main>
         <section id="hero">
             <h1>Benjamin Walker</h1>
-            <p>PhD Student in Mathematics at Oxford University</p>
+            <h5>PhD Student in Mathematics at Oxford University</h5>
             <div class="social-links">
                 <a href="https://twitter.com/ML_BenWalker" target="_blank"><i class="fab fa-twitter"></i></a>
                 <a href="https://bsky.app/profile/benjamincwalker.bsky.social" target="_blank"><i class="fab fa-bluesky"></i></a>
@@ -61,27 +61,27 @@
             <h2>Research</h2>
             <div class="publications">
                 <div class="publication">
-                    <h3>Log Neural Controlled Differential Equations</h3>
+                    <h4>Log Neural Controlled Differential Equations</h4>
                     <p>ICML 2024</p>
                     <a href="https://arxiv.org/abs/2402.18512" target="_blank">View Paper</a>
                 </div>
                 <div class="publication">
-                    <h3>Theoretical Foundations of Deep Selective State-Space Models</h3>
+                    <h4>Theoretical Foundations of Deep Selective State-Space Models</h4>
                     <p>NeurIPS 2024</p>
                     <a href="https://arxiv.org/abs/2402.19047" target="_blank">View Paper</a>
                 </div>
                 <div class="publication">
-                    <h3>ECG Signal Reconstruction from Printouts</h3>
+                    <h4>ECG Signal Reconstruction from Printouts</h4>
                     <p>Computing in Cardiology 2024</p>
                     <a href="https://cinc.org/archives/2024/pdf/CinC2024-097.pdf" target="_blank">View Paper</a>
                 </div>
                 <div class="publication">
-                    <h3>ScoEHR: Generating Synthetic Electronic Health Records</h3>
+                    <h4>ScoEHR: Generating Synthetic Electronic Health Records</h4>
                     <p>Machine Learning for Healthcare 2023</p>
                     <a href="https://proceedings.mlr.press/v219/naseer23a.html" target="_blank">View Paper</a>
                 </div>
                 <div class="publication">
-                    <h3>Dual Bayesian ResNet for Heart Murmur Detection</h3>
+                    <h4>Dual Bayesian ResNet for Heart Murmur Detection</h4>
                     <p>Computing in Cardiology 2022</p>
                     <a href="https://ieeexplore.ieee.org/abstract/document/10081848/" target="_blank">View Paper</a>
                 </div>
@@ -92,33 +92,33 @@
             <h2>Code</h2>
             <div class="projects">
                 <div class="project">
-                    <h3>Log Neural CDEs</h3>
+                    <h4>Log Neural CDEs</h4>
                     <p>Implementation of Log Neural Controlled Differential Equations (ICML 2024)</p>
                     <a href="https://github.com/Benjamin-Walker/log-neural-cdes" target="_blank">View Project</a>
                 </div>
                 <div class="project">
-                    <h3>Selective SSMs and Linear NCDEs</h3>
+                    <h4>Selective SSMs and Linear NCDEs</h4>
                     <p>Theoretical Foundations of Deep Selective State-Space Models (NeurIPS 2024)</p>
                     <a href="https://github.com/Benjamin-Walker/selective-ssms-and-linear-cdes" target="_blank">View Project</a>
                 </div>
                 <div class="project">
-                    <h3>Heart Murmur Detection</h3>
+                    <h4>Heart Murmur Detection</h4>
                     <p>Dual Bayesian ResNet for Heart Murmur Detection from Phonocardiograms (CinC 2022)</p>
                     <a href="https://github.com/Benjamin-Walker/heart-murmur-detection" target="_blank">View Project</a>
                 </div>
                 <div class="project">
-                    <h3>Diffrax Diffusion Models</h3>
+                    <h4>Diffrax Diffusion Models</h4>
                     <p>Score-based diffusion models implemented in JAX</p>
                     <a href="https://github.com/Benjamin-Walker/diffrax-diffusion-models" target="_blank">View Project</a>
                 </div>
                 <div class="project">
-                    <h3>Live Vinyl Display</h3>
+                    <h4>Live Vinyl Display</h4>
                     <p>Real-time music recognition system for vinyl records</p>
                     <a href="https://github.com/Benjamin-Walker/live-vinyl-display" target="_blank">View Project</a>
                 </div>
                 <div class="project">
-                    <h3>Personal Website</h3>
-                    <p>This website's source code with terminal-style interface</p>
+                    <h4>Personal Website</h4>
+                    <p>This website's source code with terminal-style interface and modern webpage</p>
                     <a href="https://github.com/Benjamin-Walker/benjamin-walker.github.io" target="_blank">View Project</a>
                 </div>
             </div>
@@ -159,11 +159,16 @@
             icon.classList.toggle('fa-sun');
         });
 
-        // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                const target = document.querySelector(this.getAttribute('href'));
+                const headerOffset = 45; // Adjust based on your header height
+                const elementPosition = target.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
                     behavior: 'smooth'
                 });
             });

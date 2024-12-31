@@ -108,7 +108,16 @@ h2 {
 h3 {
     font-size: 1.5rem;
     margin-top: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+h4 {
+    font-size: 1.3rem;
     margin-bottom: 1rem;
+}
+
+h5 {
+    font-size: 1.2rem;
 }
 
 .social-links {
