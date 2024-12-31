@@ -270,6 +270,7 @@ My research focuses on machine learning for sequential data, particularly in dev
                     "linkedin": "Opens my LinkedIn profile.",
                     "github": "Opens my GitHub profile.",
                     "colour": "Changes the colour scheme. Usage: colour [green|slate|purple|blue|red|orange|yellow]",
+                    "modernise": "Switches to modern website view",
                     "clear": "Clears the terminal screen.",
                     "exit": "Reloads the website.",
                     "help": "Displays this help message with a list of all commands.",
@@ -302,6 +303,9 @@ My research focuses on machine learning for sequential data, particularly in dev
                     } else {
                         simulateEnterWithText(commandRaw, `Invalid color scheme. Available options: ${Object.keys(colorSchemes).join(', ')}`);
                     }
+                } else if (command === "modernise") {
+                    output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
+                    window.location.href = 'modern_index.html';
                 } else {
                     simulateEnterWithText(commandRaw, "Command not recognised. Type 'help' to get a list of available commands.");
                 }
