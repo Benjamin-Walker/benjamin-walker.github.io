@@ -20,6 +20,15 @@
         const cursor = document.querySelector('.blinking-cursor');
         const output = document.getElementById('output');
 
+        function isMobileDevice() {
+            return (window.innerWidth <= 768) ||
+                   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        if (isMobileDevice() && !window.location.href.includes('modern_index.html')) {
+            window.location.href = 'modern_index.html';
+        }
+
         let currentColorScheme = 'green';
         const colorSchemes = {
             green: { primary: '#0f0', background: '#000' },
