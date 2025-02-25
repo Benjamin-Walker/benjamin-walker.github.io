@@ -93,7 +93,7 @@
     <section id="contact">
       <h2>Contact</h2>
       <div class="contact-content">
-        <p>Feel free to reach out via email or social media.</p>
+        <p>Feel free to reach out via social media or email: mlbenjaminwalker@gmail.com.</p>
         <div class="social-links"></div>
       </div>
     </section>
@@ -278,16 +278,6 @@
       });
     });
 
-    // THEME TOGGLE
-    const themeToggle = document.getElementById("theme-toggle");
-    const icon = themeToggle.querySelector("i");
-
-    themeToggle.addEventListener("click", () => {
-      document.body.classList.toggle("light-mode");
-      icon.classList.toggle("fa-moon");
-      icon.classList.toggle("fa-sun");
-    });
-
     // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener("click", function (e) {
@@ -313,9 +303,7 @@
       // Get the terminal container
       const terminalOutput = document.querySelector('.terminal-output');
 
-      // Get the correct button ID (might be terminal-mode-switch or retro-mode-switch)
-      const modeButton = document.getElementById('terminal-mode-switch') ||
-                         document.getElementById('retro-mode-switch');
+      const modeButton = document.getElementById('terminal-mode-switch');
 
       // Keep track of current terminal color
       let currentTerminalColor = '#0f0'; // Start with green
@@ -615,7 +603,7 @@
         // Make terminal header clickable
         terminalHeader.style.cursor = 'pointer';
         terminalHeader.addEventListener('click', function() {
-          window.location.href = 'retro_index.html';
+          window.location.href = 'cl_index.html';
         });
 
         // Add a subtle hover effect to indicate clickability
