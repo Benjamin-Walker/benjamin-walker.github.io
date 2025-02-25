@@ -28,11 +28,44 @@
   </nav>
 
   <main>
-    <!-- Hero -->
+    <!-- Hero with Terminal Preview -->
     <section id="hero">
-      <h1></h1>
-      <h5></h5>
-      <div class="social-links"></div>
+      <div class="hero-content">
+        <div class="hero-info">
+          <h1></h1>
+          <h5></h5>
+          <div class="social-links"></div>
+        </div>
+
+        <div class="terminal-preview">
+          <div class="terminal-header">
+            <div class="terminal-title">Command Line</div>
+          </div>
+          <div class="terminal-body">
+            <div class="terminal-output">
+              <div class="line">
+                <span class="prompt">></span> <span class="command">Welcome to Benjamin Walker's website</span>
+              </div>
+              <div class="line">
+                <span class="prompt">></span> <span class="command typing-effect">pages</span>
+              </div>
+              <div class="line response">
+                <button class="term-btn">About</button>
+                <button class="term-btn">CV</button>
+                <button class="term-btn">Research</button>
+                <button class="term-btn">Code</button>
+                <button class="term-btn">Social</button>
+              </div>
+              <div class="line">
+                <span class="prompt">></span> <span class="cursor"></span>
+              </div>
+            </div>
+          </div>
+          <button id="terminal-mode-switch" onclick="window.location.href='cl_index.html'">
+            <i class="fas fa-terminal"></i> Switch to Command Line
+          </button>
+        </div>
+      </div>
     </section>
 
     <!-- About -->
@@ -71,9 +104,6 @@
 
   <footer>
     <p>© 2024 Ben Walker</p>
-    <button id="terminal-mode" onclick="window.location.href='terminal_index.html'">
-      Switch to Terminal Mode
-    </button>
   </footer>
 
   <!-- 1. Include content.js so siteContent is available -->
@@ -91,9 +121,9 @@
       } = window.siteContent;
 
       // ==== HERO SECTION ====
-      const heroH1 = document.querySelector("#hero h1");
-      const heroH5 = document.querySelector("#hero h5");
-      const heroSocialLinks = document.querySelector("#hero .social-links");
+      const heroH1 = document.querySelector(".hero-info h1");
+      const heroH5 = document.querySelector(".hero-info h5");
+      const heroSocialLinks = document.querySelector(".hero-info .social-links");
 
       heroH1.textContent = personal.name;
       heroH5.textContent = personal.title;
@@ -274,6 +304,321 @@
           top: offsetPosition,
           behavior: "smooth",
         });
+      });
+    });
+  </script>
+
+<!-- Terminal animation script -->
+<!-- Terminal animation script with stable positioning -->
+<!-- Terminal animation script with color inheritance -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Get the terminal container
+      const terminalOutput = document.querySelector('.terminal-output');
+
+      // Get the correct button ID (might be terminal-mode-switch or retro-mode-switch)
+      const modeButton = document.getElementById('terminal-mode-switch') ||
+                         document.getElementById('retro-mode-switch');
+
+      // Keep track of current terminal color
+      let currentTerminalColor = '#0f0'; // Start with green
+
+      // Force initial green color for terminal elements
+      const setGreenColors = () => {
+        currentTerminalColor = '#0f0';
+        // Set button color if it exists
+        if (modeButton) {
+          modeButton.style.color = currentTerminalColor;
+        }
+      };
+
+      // Animation sequence
+      const commands = [
+        // Step 1: Add initial cursor line
+        { addNewLine: true, delay: 1500 },
+
+        // Step 2: Type "about"
+        { text: "about", delay: 10 },
+
+        // Step 3: Show about response
+        {
+          response: `<div style="color:#0f0;">PhD Student in Mathematics at Oxford University</div>`,
+          delay: 10
+        },
+
+        // Step 4: Add a proper new line for the "colour blue" command
+        { addNewLine: true, delay: 4000 },
+
+        // Step 5: Type "colour blue" command
+        { text: "colour blue", delay: 10 },
+
+        // Step 6: Execute color change (no text response)
+        {
+          noTextResponse: true,
+          delay: 10,
+          callback: () => {
+            // Set new color
+            currentTerminalColor = '#60a5fa'; // Blue
+
+            // Change ALL text elements to blue including existing content
+            document.querySelectorAll('.terminal-output .prompt').forEach(el => {
+              el.style.color = currentTerminalColor;
+            });
+
+            document.querySelectorAll('.terminal-output .command').forEach(el => {
+              el.style.color = currentTerminalColor;
+            });
+
+            document.querySelectorAll('.terminal-output .response').forEach(el => {
+              el.style.color = currentTerminalColor;
+            });
+
+            document.querySelectorAll('.terminal-output .line').forEach(el => {
+              el.style.color = currentTerminalColor;
+            });
+
+            // Also change any div elements directly inside responses
+            document.querySelectorAll('.terminal-output .response div').forEach(el => {
+              el.style.color = currentTerminalColor;
+            });
+
+            // Change cursor color
+            const cursor = document.querySelector('.cursor');
+            if (cursor) {
+              cursor.style.backgroundColor = currentTerminalColor;
+            }
+
+            // Change switch button color
+            if (modeButton) {
+              modeButton.style.color = currentTerminalColor;
+            }
+          }
+        },
+
+        // Step 7: Add a new line for the "pages" command with the current color
+        { addNewLine: true, delay: 4000 },
+
+        // Step 8: Type "pages" on the new line
+        { text: "pages", delay: 10 },
+
+        // Step 9: Show pages buttons with blue styling (no cursor reset)
+        {
+          response: `<div style="color:#60a5fa;">
+            <button class="term-btn" style="color:#60a5fa; border-color:#60a5fa;">About</button>
+            <button class="term-btn" style="color:#60a5fa; border-color:#60a5fa;">CV</button>
+            <button class="term-btn" style="color:#60a5fa; border-color:#60a5fa;">Research</button>
+            <button class="term-btn" style="color:#60a5fa; border-color:#60a5fa;">Code</button>
+            <button class="term-btn" style="color:#60a5fa; border-color:#60a5fa;">Social</button>
+          </div>`,
+          delay: 8000  // Long delay to stay on this view before restarting
+        }
+      ];
+
+      // Function to simulate typing - IMPROVED to maintain positioning
+      function typeCommand(command, element, callback) {
+        let index = 0;
+        // Store the initial height to prevent layout shifts
+        const initialHeight = element.offsetHeight;
+        element.textContent = '';
+        // If empty, add a non-breaking space to maintain height
+        if (initialHeight === 0) {
+          element.innerHTML = '&nbsp;';
+        }
+
+        function type() {
+          if (index < command.length) {
+            // Remove the non-breaking space before adding real content
+            if (element.innerHTML === '&nbsp;' && index === 0) {
+              element.innerHTML = '';
+            }
+            element.textContent += command[index];
+            index++;
+            setTimeout(type, Math.random() * 50 + 100);
+          } else if (callback) {
+            callback();
+          }
+        }
+
+        type();
+      }
+
+      // Function to add a new line to the terminal - IMPROVED for stable positioning
+      function addLine(isCommand = true) {
+        const line = document.createElement('div');
+        line.className = 'line';
+
+        if (isCommand) {
+          // Create a stable command line structure that won't shift during typing
+          line.innerHTML = `
+            <span class="prompt" style="color:${currentTerminalColor};">></span>
+            <span class="command" style="color:${currentTerminalColor};">&nbsp;</span>
+          `;
+
+          // Remove the non-breaking space when we start typing
+          const commandSpan = line.querySelector('.command');
+          if (commandSpan) {
+            commandSpan.style.minWidth = '1ch'; // Ensure a minimum width
+          }
+        } else {
+          line.className = 'line response';
+          line.style.color = currentTerminalColor;
+        }
+
+        terminalOutput.appendChild(line);
+        return line;
+      }
+
+      // Function to add cursor line at the end - IMPROVED for stable positioning
+      function addCursorLine() {
+        // Remove existing cursor line if it exists
+        const existingCursorLine = terminalOutput.querySelector('.line:last-child .cursor');
+        if (existingCursorLine) {
+          existingCursorLine.parentElement.remove();
+        }
+
+        const cursorLine = document.createElement('div');
+        cursorLine.className = 'line';
+
+        // Use the current color for the new line
+        cursorLine.innerHTML = `
+          <span class="prompt" style="color:${currentTerminalColor};">></span>
+          <span style="display:inline-block; min-width:2px;">&nbsp;</span>
+          <span class="cursor" style="background-color:${currentTerminalColor};"></span>
+        `;
+
+        terminalOutput.appendChild(cursorLine);
+        return cursorLine;
+      }
+
+      // Function to clear the terminal
+      function clearTerminal() {
+        // Remove all content from terminal
+        terminalOutput.innerHTML = '';
+      }
+
+      // Initialize the terminal with an empty state
+      function initializeTerminal() {
+        // Reset to green color
+        currentTerminalColor = '#0f0';
+        // Make sure terminal is empty
+        clearTerminal();
+        // Set initial colors
+        setGreenColors();
+      }
+
+      // Run the animation sequence
+      function runSequence(index = 0) {
+        if (index >= commands.length) {
+          // Restart the animation after a delay
+          setTimeout(() => {
+            initializeTerminal();
+            runSequence(0);
+          }, 3000);
+          return;
+        }
+
+        const command = commands[index];
+
+        if (command.clearTerminal) {
+          clearTerminal();
+          setTimeout(() => {
+            addCursorLine();
+            runSequence(index + 1);
+          }, command.delay);
+          return;
+        }
+
+        if (command.addNewLine) {
+          // Add a new command line for the next instruction
+          addCursorLine();
+          setTimeout(() => {
+            runSequence(index + 1);
+          }, command.delay);
+          return;
+        }
+
+        if (command.text) {
+          // Get the last cursor line and replace with command line
+          const lastLine = terminalOutput.querySelector('.line:last-child');
+
+          // Create a stable command line that won't shift, using current color
+          lastLine.innerHTML = `
+            <span class="prompt" style="color:${currentTerminalColor};">></span>
+            <span class="command" style="color:${currentTerminalColor};">&nbsp;</span>
+          `;
+
+          const commandSpan = lastLine.querySelector('.command');
+
+          typeCommand(command.text, commandSpan, () => {
+            setTimeout(() => {
+              runSequence(index + 1);
+            }, command.delay);
+          });
+        } else if (command.response) {
+          const responseLine = document.createElement('div');
+          responseLine.className = 'line response';
+
+          responseLine.style.color = currentTerminalColor;
+          responseLine.innerHTML = command.response;
+          terminalOutput.appendChild(responseLine);
+
+          if (command.callback) {
+            command.callback();
+          }
+
+          // Only add cursor line if specifically requested
+          if (command.resetCursor) {
+            addCursorLine();
+          }
+
+          setTimeout(() => {
+            runSequence(index + 1);
+          }, command.delay);
+        } else if (command.noTextResponse) {
+          // For commands with no text response but callbacks
+          if (command.callback) {
+            command.callback();
+          }
+
+          setTimeout(() => {
+            runSequence(index + 1);
+          }, command.delay);
+        }
+      }
+
+      // Ensure terminal is empty at start
+      clearTerminal();
+
+      // Apply initial styling
+      setGreenColors();
+
+      // Start the animation with a delay
+      setTimeout(() => {
+        initializeTerminal();
+        runSequence();
+      }, 1000);
+
+      // Make terminal buttons interactive
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('term-btn')) {
+          const allButtons = document.querySelectorAll('.term-btn');
+          allButtons.forEach(btn => {
+            btn.style.backgroundColor = 'transparent';
+          });
+
+          // Get current color theme
+          const buttonColor = e.target.style.color || currentTerminalColor;
+
+          // Visual feedback
+          e.target.style.backgroundColor = buttonColor;
+          e.target.style.color = '#1e1e1e';
+
+          // Reset after a moment
+          setTimeout(() => {
+            e.target.style.backgroundColor = 'transparent';
+            e.target.style.color = e.target.style.borderColor || buttonColor;
+          }, 300);
+        }
       });
     });
   </script>

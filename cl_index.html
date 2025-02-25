@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ben's Website</title>
-  <link rel="stylesheet" href="terminal_style.css" />
+  <link rel="stylesheet" href="cl_style.css" />
 </head>
 <body>
   <div class="terminal">
@@ -189,6 +189,15 @@
       document.querySelector(".terminal").style.borderColor = scheme.primary;
       input.style.color = scheme.primary;
       cursor.style.backgroundColor = scheme.primary;
+
+      // Also update the return button to match the color scheme
+      const returnButton = document.getElementById("return-modern-mode");
+      if (returnButton) {
+        returnButton.style.color = scheme.primary;
+        returnButton.style.borderColor = scheme.primary;
+        returnButton.style.backgroundColor = scheme.background;
+      }
+
       applyColorSchemeToButtons();
       return true;
     }
@@ -304,6 +313,15 @@
 
     // Initial animation
     window.onload = () => {
+      // Initialize return button with current color scheme
+      const returnButton = document.getElementById("return-modern-mode");
+      if (returnButton) {
+        const scheme = colorSchemes[currentColorScheme];
+        returnButton.style.color = scheme.primary;
+        returnButton.style.borderColor = scheme.primary;
+        returnButton.style.backgroundColor = scheme.background;
+      }
+
       typeText("Welcome to Benjamin Walker's website", () => {
         simulateEnterWithButtons();
         setTimeout(() => {
@@ -459,5 +477,9 @@
       });
     });
   </script>
+
+<button id="return-modern-mode" onclick="window.location.href='index.html'">
+  &larr; Return to Modern
+</button>
 </body>
 </html>

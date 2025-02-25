@@ -12,6 +12,12 @@ body {
     border: 2px solid #0f0;
     padding: 10px;
     min-height: 90vh;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .input-line {
@@ -50,7 +56,7 @@ body {
     margin: 0 4px;
     font-family: inherit;
     font-size: inherit;
-    position: relative; /* Important for the :after pseudo-element */
+    position: relative;
     transition: all 0.1s;
 }
 
@@ -77,5 +83,66 @@ body {
 @keyframes blink {
     50% {
         background-color: transparent;
+    }
+}
+
+#return-modern-mode {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #000;
+  color: #0f0;
+  border: 2px solid #0f0;
+  border-radius: 8px;
+  padding: 10px 20px;  /* Increased padding */
+  font-family: inherit;
+  font-size: 1.4rem;  /* Increased from 1rem to 1.4rem */
+  font-weight: bold;  /* Added bold for better visibility */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+}
+
+#return-modern-mode:hover {
+    background-color: #0f0;
+    color: #000;
+    transform: scale(1.05); /* Added slight scale effect on hover */
+}
+
+/* For active buttons */
+.button.active {
+    background-color: #0f0;
+    color: #000;
+}
+
+/* Make sure buttons can accommodate longer text */
+u {
+    text-decoration: underline;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+/* Ensure responsiveness */
+@media (max-width: 768px) {
+    body {
+        font-size: 1.2rem;
+        padding: 10px;
+    }
+
+    .terminal {
+        padding: 5px;
+    }
+
+    #input {
+        width: 30ch;
+    }
+
+    .button {
+        margin: 2px;
+        padding: 1px 3px;
     }
 }

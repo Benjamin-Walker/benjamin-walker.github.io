@@ -5,6 +5,10 @@
     --bg-color: #0f172a;
     --nav-bg: rgba(15, 23, 42, 0.8);
     --card-bg: #1e293b;
+    --terminal-dark-bg: #1e1e1e;
+    --terminal-header-bg: #1c2128;
+    --terminal-text: #ddd;
+    --terminal-prompt: #0f0;
 }
 
 .light-mode {
@@ -13,6 +17,10 @@
     --bg-color: #f9fafb;
     --nav-bg: rgba(249, 250, 251, 0.8);
     --card-bg: #ffffff;
+    --terminal-dark-bg: #2d333b;
+    --terminal-header-bg: #ced4da;
+    --terminal-text: #333;
+    --terminal-prompt: #0b6e31;
 }
 
 * {
@@ -83,14 +91,27 @@ main {
 
 section {
     padding: 1rem 0;
+    margin-bottom: 2rem;
 }
 
+/* Updated Hero Section with Terminal Preview */
 #hero {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
+    align-items: center;
+    padding: 80px 0;
+}
+
+.hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 40px;
+}
+
+.hero-info {
+    flex: 1;
 }
 
 h1 {
@@ -148,6 +169,154 @@ h5 {
     color: var(--primary-color) !important;
 }
 
+/* Terminal Preview Styling */
+.terminal-preview {
+    flex: 1;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    background: var(--terminal-dark-bg);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.terminal-preview:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.terminal-header {
+    background: var(--terminal-header-bg);
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #444;
+}
+
+.terminal-buttons {
+    display: flex;
+    gap: 6px;
+    margin-right: 15px;
+}
+
+.terminal-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.terminal-btn.red { background-color: #ff5f56; }
+.terminal-btn.yellow { background-color: #ffbd2e; }
+.terminal-btn.green { background-color: #27c93f; }
+
+.terminal-title {
+    color: var(--terminal-text);
+    margin: 0 auto;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.terminal-body {
+    padding: 15px;
+    height: 220px;
+    overflow: hidden;
+    font-family: 'Courier New', monospace;
+    color: var(--terminal-text);
+    background-color: var(--terminal-dark-bg);
+}
+
+.terminal-output .line {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.terminal-output .prompt {
+    color: var(--terminal-prompt);
+    margin-right: 10px;
+}
+
+.terminal-output .command {
+    color: var(--terminal-text);
+}
+
+.terminal-output .response {
+    margin-left: 20px;
+    color: var(--terminal-text);
+}
+
+/* Terminal buttons styling */
+.term-btn {
+    background: transparent;
+    border: 1px solid #94a3b8;
+    color: #94a3b8;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.term-btn:hover {
+    background-color: #94a3b8;
+    color: var(--terminal-dark-bg);
+}
+
+/* Typing effect for terminal */
+.typing-effect {
+    animation: typing 1.5s steps(10) infinite;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    border-right: 2px solid transparent;
+}
+
+@keyframes typing {
+    0% { width: 0; border-color: transparent; }
+    50% { border-color: var(--terminal-text); }
+    100% { width: 100%; border-color: transparent; }
+}
+
+/* Blinking cursor */
+.cursor {
+    display: inline-block;
+    width: 10px;
+    height: 18px;
+    background-color: var(--terminal-text);
+    margin-left: 2px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Terminal mode switch button */
+#terminal-mode-switch {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--terminal-dark-bg), var(--terminal-header-bg));
+    color: var(--terminal-prompt);
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#terminal-mode-switch:hover {
+    background: linear-gradient(135deg, var(--terminal-header-bg), var(--terminal-dark-bg));
+    filter: brightness(1.2);
+}
+
+#terminal-mode-switch i {
+    margin-right: 8px;
+}
+
 .publications, .projects {
     display: flex;
     overflow-x: auto;
@@ -193,22 +362,16 @@ footer {
     border-top: 1px solid var(--card-bg);
 }
 
-#terminal-mode {
-    background: var(--card-bg);
-    color: var(--text-color);
-    border: 1px solid var(--primary-color);
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: background-color 0.3s;
+.about-text ul {
+    list-style-position: inside;
+    padding-left: 1rem;
 }
 
-#terminal-mode:hover {
-    background: var(--primary-color);
-    color: white;
+.about-text li {
+    margin-bottom: 0.5rem;
 }
 
+/* Responsive styles */
 @media (max-width: 768px) {
     .nav-links {
         display: none;
@@ -218,16 +381,67 @@ footer {
         font-size: 2.5rem;
     }
 
-    section {
-        padding: 4rem 0;
+    .hero-content {
+        flex-direction: column;
+    }
+
+    .terminal-preview {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 30px;
     }
 }
 
-.about-text ul {
-    list-style-position: inside;
-    padding-left: 1rem;
+.terminal-output .line {
+  margin-bottom: 10px;
+  line-height: 1.5;
+  position: relative; /* For positioning children */
+  min-height: 1.5em; /* Ensure consistent height */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
 }
 
-.about-text li {
-    margin-bottom: 0.5rem;
+/* Adjust prompt positioning */
+.terminal-output .prompt {
+  color: #0f0;
+  margin-right: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: 0; /* Prevent vertical movement */
+}
+
+/* Adjust command text positioning */
+.terminal-output .command {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Fix cursor positioning */
+.cursor {
+  display: inline-block;
+  width: 10px;
+  height: 18px;
+  background-color: #0f0;
+  margin-left: 0px;
+  position: relative;
+  top: 0px;    /* Adjust this value to move cursor down */
+  left: -10px;  /* Adjust this value to move cursor left */
+  animation: blink 1s infinite;
+  vertical-align: middle;
+}
+
+/* Ensure response lines are properly aligned */
+.terminal-output .response {
+  margin-left: 20px;
+  min-height: 1.5em;
+  display: block; /* Prevent flex behavior for responses */
+}
+
+/* Create consistent spacing for all terminal elements */
+.terminal-body {
+  padding: 15px;
+  font-family: 'Courier New', monospace;
+  line-height: 1.5;
 }
