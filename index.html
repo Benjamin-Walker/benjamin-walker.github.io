@@ -2,475 +2,278 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ben's Website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Ben Walker | Mathematics & Machine Learning</title>
   <link rel="stylesheet" href="style.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  />
 </head>
 <body>
-  <div class="terminal">
-    <div id="output"></div>
-    <div class="input-line">
-      <span class="prompt">></span>
-      <input type="text" id="input" autofocus style="width: 40ch;" />
-      <span class="blinking-cursor"></span>
+  <nav>
+    <div class="nav-content">
+      <div class="logo">BW</div>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#research">Research</a>
+        <a href="#code">Code</a>
+        <a href="#contact">Contact</a>
+        <button id="theme-toggle">
+          <i class="fas fa-sun"></i>
+        </button>
+      </div>
     </div>
-  </div>
+  </nav>
+
+  <main>
+    <!-- Hero -->
+    <section id="hero">
+      <h1></h1>
+      <h5></h5>
+      <div class="social-links"></div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+      <h2>About</h2>
+      <div class="about-content">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+
+    <!-- Research -->
+    <section id="research">
+      <h2>Research</h2>
+      <div class="publications">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+
+    <!-- Code -->
+    <section id="code">
+      <h2>Code</h2>
+      <div class="projects">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+      <h2>Contact</h2>
+      <div class="contact-content">
+        <p>Feel free to reach out via email or social media.</p>
+        <div class="social-links"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2024 Ben Walker</p>
+    <button id="terminal-mode" onclick="window.location.href='terminal_index.html'">
+      Switch to Terminal Mode
+    </button>
+  </footer>
 
   <!-- 1. Include content.js so siteContent is available -->
   <script src="content.js"></script>
 
-  <!-- 2. Main script that uses siteContent to generate terminal content -->
+  <!-- 2. Main script to populate the page -->
   <script>
-    // Terminal Elements
-    const input = document.getElementById("input");
-    const cursor = document.querySelector(".blinking-cursor");
-    const output = document.getElementById("output");
+    // Once DOM is loaded, populate page from siteContent
+    document.addEventListener("DOMContentLoaded", () => {
+      const {
+        personal,
+        social,
+        publications,
+        projects,
+      } = window.siteContent;
 
-    // Try to redirect if on mobile (as you did before)
-    function isMobileDevice() {
-      return (
-        window.innerWidth <= 768 ||
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        )
-      );
-    }
+      // ==== HERO SECTION ====
+      const heroH1 = document.querySelector("#hero h1");
+      const heroH5 = document.querySelector("#hero h5");
+      const heroSocialLinks = document.querySelector("#hero .social-links");
 
-    if (isMobileDevice() && !window.location.href.includes("modern_index.html")) {
-      window.location.href = "modern_index.html";
-    }
+      heroH1.textContent = personal.name;
+      heroH5.textContent = personal.title;
 
-    // -------------
-    // LOAD CONTENT from siteContent
-    // -------------
-    const { personal, social, publications, projects } = window.siteContent;
+      // Social icons
+      const socialIcons = [
+        { icon: "fab fa-twitter", link: social.twitter },
+        { icon: "fab fa-bluesky", link: social.bluesky },
+        { icon: "fab fa-github", link: social.github },
+        { icon: "fab fa-linkedin", link: social.linkedin },
+      ];
 
-    // Build "About" page text
-    const aboutPageText = (() => {
-      const lines = [];
-      lines.push("<u>Current Position</u>");
-      lines.push(personal.currentPosition);
-      lines.push("<u>Research Interests</u>");
-      lines.push(personal.researchFocus);
+      socialIcons.forEach((item) => {
+        const a = document.createElement("a");
+        a.href = item.link;
+        a.target = "_blank";
+
+        const i = document.createElement("i");
+        i.className = item.icon;
+
+        a.appendChild(i);
+        heroSocialLinks.appendChild(a);
+      });
+
+      // CV link
+      const cvLink = document.createElement("a");
+      cvLink.href = social.cv;
+      cvLink.target = "_blank";
+      cvLink.classList.add("cv-button");
+      cvLink.textContent = "CV";
+      heroSocialLinks.appendChild(cvLink);
+
+      // ==== ABOUT SECTION ====
+      const aboutContainer = document.querySelector(".about-content");
+
+      // Current Position
+      const positionHeading = document.createElement("h3");
+      positionHeading.textContent = "Current Position";
+      aboutContainer.appendChild(positionHeading);
+
+      const positionPara = document.createElement("p");
+      positionPara.textContent = personal.currentPosition;
+      aboutContainer.appendChild(positionPara);
+
+      // Research Focus
+      const focusHeading = document.createElement("h3");
+      focusHeading.textContent = "Research Focus";
+      aboutContainer.appendChild(focusHeading);
+
+      const focusPara = document.createElement("p");
+      focusPara.textContent = personal.researchFocus;
+      aboutContainer.appendChild(focusPara);
 
       // Education
-      lines.push("<u>Academic Background</u>");
-      personal.education.forEach((ed) => {
-        let text = `- ${ed.degree}, ${ed.institution} (${ed.years})`;
-        if (ed.honors) text += `, ${ed.honors}`;
-        lines.push(text);
-      });
+      const eduHeading = document.createElement("h3");
+      eduHeading.textContent = "Education";
+      aboutContainer.appendChild(eduHeading);
 
-      lines.push(`<u>Teaching Experience</u>`);
-      personal.teaching.forEach((teaching) => lines.push(`- ${teaching}`));
+      const eduList = document.createElement("ul");
+      personal.education.forEach((edu) => {
+        const li = document.createElement("li");
+        let text = `${edu.degree}, ${edu.institution} (${edu.years})`;
+        if (edu.honors) {
+          text += `, ${edu.honors}`;
+        }
+        li.textContent = text;
+        eduList.appendChild(li);
+      });
+      aboutContainer.appendChild(eduList);
+
+      // Teaching Experience
+      const teachingHeading = document.createElement("h3");
+      teachingHeading.textContent = "Teaching Experience";
+      aboutContainer.appendChild(teachingHeading);
+
+      const teachingList = document.createElement("ul");
+      personal.teaching.forEach((teaching) => {
+        const li = document.createElement("li");
+        li.textContent = teaching;
+        teachingList.appendChild(li);
+      });
+      aboutContainer.appendChild(teachingList);
 
       // Awards
-      lines.push(`<u>Awards and Recognition</u>`);
-      personal.awards.forEach((award) => lines.push(`- ${award}`));
+      const awardsHeading = document.createElement("h3");
+      awardsHeading.textContent = "Awards and Recognition";
+      aboutContainer.appendChild(awardsHeading);
 
-      return lines.join("\n");
-    })();
-
-    // Build "Research" page text from publications
-    const researchPageText = (() => {
-      const lines = [];
-      lines.push(
-        "My research interests include time series, neural differential equations, generative modeling, and machine learning in healthcare."
-      );
-      lines.push("My recent publications include:");
-      publications.forEach((pub, idx) => {
-        lines.push(
-          `${idx + 1}. <button class='button' onclick="window.open('${
-            pub.link
-          }')">${pub.title}</button>`
-        );
-        lines.push(`   ${pub.conference}`);
-        lines.push(`   Authors: ${pub.authors}`);
+      const awardsList = document.createElement("ul");
+      personal.awards.forEach((award) => {
+        const li = document.createElement("li");
+        li.textContent = award;
+        awardsList.appendChild(li);
       });
-      return lines.join("\n");
-    })();
+      aboutContainer.appendChild(awardsList);
 
-    // Build "Code" page text from projects
-    const codePageText = (() => {
-      // Group projects by category
-      const groups = {};
+      // ==== RESEARCH/PUBLICATIONS SECTION ====
+      const pubsContainer = document.querySelector(".publications");
+      publications.forEach((pub) => {
+        const div = document.createElement("div");
+        div.classList.add("publication");
+
+        const h4 = document.createElement("h4");
+        h4.textContent = pub.title;
+        div.appendChild(h4);
+
+        const p = document.createElement("p");
+        p.textContent = pub.conference;
+        div.appendChild(p);
+
+        const a = document.createElement("a");
+        a.href = pub.link;
+        a.target = "_blank";
+        a.textContent = "View Paper";
+        div.appendChild(a);
+
+        pubsContainer.appendChild(div);
+      });
+
+      // ==== CODE/PROJECTS SECTION ====
+      const projContainer = document.querySelector(".projects");
       projects.forEach((proj) => {
-        if (!groups[proj.category]) groups[proj.category] = [];
-        groups[proj.category].push(proj);
+        const div = document.createElement("div");
+        div.classList.add("project");
+
+        const h4 = document.createElement("h4");
+        h4.textContent = proj.name;
+        div.appendChild(h4);
+
+        const p = document.createElement("p");
+        p.textContent = proj.description;
+        div.appendChild(p);
+
+        const a = document.createElement("a");
+        a.href = proj.link;
+        a.target = "_blank";
+        a.textContent = "View Project";
+        div.appendChild(a);
+
+        projContainer.appendChild(div);
       });
 
-      // Now build lines
-      const lines = ["My open-source projects are organized as follows:"];
-      Object.keys(groups).forEach((cat) => {
-        lines.push(`<u>${cat}</u>`);
-        groups[cat].forEach((proj, idx) => {
-          lines.push(
-            `${idx + 1}. <button class='button' onclick="window.open('${
-              proj.link
-            }')">${proj.name}</button>`
-          );
-          lines.push(`   ${proj.description}`);
+      // ==== CONTACT SECTION ====
+      const contactLinks = document.querySelector("#contact .social-links");
+      socialIcons.forEach((item) => {
+        const a = document.createElement("a");
+        a.href = item.link;
+        a.target = "_blank";
+
+        const i = document.createElement("i");
+        i.className = item.icon;
+
+        a.appendChild(i);
+        contactLinks.appendChild(a);
+      });
+    });
+
+    // THEME TOGGLE
+    const themeToggle = document.getElementById("theme-toggle");
+    const icon = themeToggle.querySelector("i");
+
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("light-mode");
+      icon.classList.toggle("fa-moon");
+      icon.classList.toggle("fa-sun");
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener("click", function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute("href"));
+        const headerOffset = 45; // Adjust based on your header height
+        const elementPosition = target.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
         });
-      });
-      return lines.join("\n");
-    })();
-
-    // Build "Social" page text from siteContent.social
-    const socialPageText = (() => {
-      const links = [
-        { label: "Twitter", url: social.twitter },
-        { label: "Bluesky", url: social.bluesky },
-        { label: "LinkedIn", url: social.linkedin },
-        { label: "GitHub", url: social.github },
-      ];
-      return (
-        links
-          .map(
-            (item) =>
-              `<button class='button' onclick="window.open('${item.url}')">${item.label}</button>`
-          )
-          .join("    ")
-      );
-    })();
-
-    // -------------
-    // Construct your "pageText" object used by the terminal
-    // -------------
-    const pageText = {
-      About: aboutPageText,
-      Research: researchPageText,
-      Code: codePageText,
-      Social: socialPageText,
-      // We can dynamically load CV, but let's keep it in the "navigateTo()" logic
-    };
-
-    // -------------
-    // Terminal Logic
-    // -------------
-    let currentColorScheme = "green";
-    const colorSchemes = {
-      green: { primary: "#0f0", background: "#000" },
-      slate: { primary: "#94a3b8", background: "#020617" },
-      purple: { primary: "#c084fc", background: "#2e1065" },
-      blue: { primary: "#60a5fa", background: "#172554" },
-      red: { primary: "#f87171", background: "#450a0a" },
-      orange: { primary: "#fb923c", background: "#431407" },
-      yellow: { primary: "#fbbf24", background: "#422006" },
-    };
-
-    function applyColorSchemeToButtons() {
-      const scheme = colorSchemes[currentColorScheme];
-      const buttons = document.querySelectorAll(".button");
-
-      buttons.forEach((oldButton) => {
-        const onclickHandler = oldButton.getAttribute("onclick");
-
-        // Create new button element
-        const newButton = document.createElement("button");
-        newButton.className = "button";
-        newButton.innerHTML = oldButton.innerHTML;
-        if (onclickHandler) {
-          newButton.setAttribute("onclick", onclickHandler);
-        }
-
-        // Apply initial styling
-        newButton.style.color = scheme.primary;
-        newButton.style.borderColor = scheme.primary;
-        newButton.style.backgroundColor = "transparent";
-
-        // Replace the old button with the new one
-        if (oldButton.parentNode) {
-          oldButton.parentNode.replaceChild(newButton, oldButton);
-        }
-      });
-    }
-
-
-    function resetAllButtonStyles() {
-      const scheme = colorSchemes[currentColorScheme];
-      document.querySelectorAll(".button").forEach(btn => {
-        btn.style.backgroundColor = "transparent";
-        btn.style.color = scheme.primary;
-      });
-    }
-
-    function changeColorScheme(colorName) {
-      const scheme = colorSchemes[colorName];
-      if (!scheme) return false;
-
-      currentColorScheme = colorName;
-      document.body.style.backgroundColor = scheme.background;
-      document.body.style.color = scheme.primary;
-      document.querySelector(".terminal").style.borderColor = scheme.primary;
-      input.style.color = scheme.primary;
-      cursor.style.backgroundColor = scheme.primary;
-      applyColorSchemeToButtons();
-      return true;
-    }
-
-    function clearTerminal() {
-      output.innerHTML = "";
-    }
-
-    function scrollToBottom() {
-      window.scrollTo(0, document.body.scrollHeight);
-    }
-
-    function typeText(text, callback) {
-      let index = 0;
-      input.disabled = true;
-
-      const interval = setInterval(() => {
-        if (index < text.length) {
-          input.value += text[index];
-          updateCursor();
-          scrollToBottom();
-          index++;
-        } else {
-          clearInterval(interval);
-          input.disabled = false;
-          input.focus();
-          if (callback) callback();
-        }
-      }, 50);
-    }
-
-    function simulateEnterWithButtons(commandOutput = "", command = input.value) {
-        output.innerHTML += `<div><span class="prompt">></span> ${command}</div>`;
-        if (commandOutput) {
-          const links =
-            "    " +
-            commandOutput
-              .split("    ")
-              .map((page) => {
-                return `<button class="button" onclick="navigateTo('${page}')">${page}</button>`;
-              })
-              .join("    ");
-          output.innerHTML += `<div>${links}</div>`;
-          applyColorSchemeToButtons();
-        }
-        input.value = "";
-        updateCursor();
-        scrollToBottom();
-    }
-
-    function simulateEnterWithText(command, commandOutput = "") {
-      output.innerHTML += `<div><span class="prompt">></span> ${command}</div>`;
-      if (commandOutput) {
-        output.innerHTML += `<div>${commandOutput}</div>`;
-        applyColorSchemeToButtons();
-      }
-      input.value = "";
-      updateCursor();
-      scrollToBottom();
-    }
-
-    function navigateTo(page, commandRaw = "") {
-      const scheme = colorSchemes[currentColorScheme];
-      document.querySelectorAll(".button").forEach(btn => {
-        btn.style.backgroundColor = "transparent";
-        btn.style.color = scheme.primary;
-      });
-      if (commandRaw === "") {
-        commandRaw = page;
-      }
-      if (["Twitter","Bluesky","LinkedIn","GitHub"].includes(page)) {
-        const socialLinks = {
-          "Twitter": social.twitter,
-          "Bluesky": social.bluesky,
-          "LinkedIn": social.linkedin,
-          "GitHub": social.github,
-        };
-        output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
-        window.open(socialLinks[page], "_blank");
-        input.focus();
-        scrollToBottom();
-        return;
-      }
-      if (page === "CV") {
-        // open CV
-        output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
-        window.open(social.cv, "_blank");
-        resetAllButtonStyles();
-      } else if (page === "Social") {
-        // Instead of using simulateEnterWithText, do this:
-        simulateEnterWithButtons("Twitter    Bluesky    LinkedIn    GitHub", commandRaw);
-      } else {
-        simulateEnterWithText(commandRaw, pageText[page] || "No data for this page.");
-      }
-      input.focus();
-      scrollToBottom();
-    }
-
-    function handleSocialCommand(commandRaw) {
-      const command = commandRaw.toLowerCase();
-      const socialLinks = {
-        twitter: social.twitter,
-        bluesky: social.bluesky,
-        linkedin: social.linkedin,
-        github: social.github,
-      };
-      if (command in socialLinks) {
-        window.open(socialLinks[command]);
-        simulateEnterWithText(commandRaw);
-        resetAllButtonStyles(); // Add this line
-      }
-    }
-
-    // Initial animation
-    window.onload = () => {
-      typeText("Welcome to Benjamin Walker's website", () => {
-        simulateEnterWithButtons();
-        setTimeout(() => {
-          typeText("colour slate", () => {
-            simulateEnterWithButtons();
-            changeColorScheme("slate");
-            setTimeout(() => {
-              typeText("pages", () => {
-                simulateEnterWithButtons("About    CV    Research    Code    Social");
-              });
-            }, 500);
-          });
-        }, 500);
-      });
-    };
-
-    // Command handling
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        const commandRaw = input.value.trim();
-        const commandParts = commandRaw.toLowerCase().split(" ");
-        const command = commandParts[0];
-
-        const commands = {
-          pages: "Displays all available pages.",
-          about: "Who I am and what I do",
-          cv: "Opens my CV in a new tab.",
-          research: "Highlights some recent research.",
-          code: "Lists my coding projects.",
-          social: "Displays social media links.",
-          twitter: "Opens Twitter.",
-          bluesky: "Opens Bluesky.",
-          linkedin: "Opens LinkedIn.",
-          github: "Opens GitHub.",
-          colour: "Change the colour scheme (colour [green|slate|...]).",
-          modernise: "Switches to modern website view",
-          clear: "Clears the terminal screen.",
-          exit: "Reloads the website.",
-          help: "Displays this help message.",
-        };
-
-        if (command === "clear") {
-          clearTerminal();
-        } else if (command === "pages") {
-          simulateEnterWithButtons("About    CV    Research    Code    Social");
-        } else if (command === "cv") {
-          navigateTo("CV", commandRaw);
-        } else if (["about", "research", "code", "social"].includes(command)) {
-          navigateTo(command.charAt(0).toUpperCase() + command.slice(1), commandRaw);
-        } else if (["twitter", "bluesky", "linkedin", "github"].includes(command)) {
-          handleSocialCommand(commandRaw);
-        } else if (command === "exit") {
-          output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
-          location.reload();
-        } else if (command === "help") {
-          const helpMessage = Object.entries(commands)
-            .map(([cmd, desc]) => `- ${cmd}: ${desc}`)
-            .join("\n");
-          simulateEnterWithText("help", helpMessage);
-        } else if (command === "colour") {
-          const colorName = commandParts[1];
-          if (!colorName) {
-            simulateEnterWithText(
-              commandRaw,
-              "Usage: colour [green|slate|purple|blue|red|orange|yellow]"
-            );
-          } else if (changeColorScheme(colorName)) {
-            simulateEnterWithText(commandRaw, `Color scheme changed to ${colorName}`);
-          } else {
-            simulateEnterWithText(
-              commandRaw,
-              `Invalid color scheme. Available: ${Object.keys(colorSchemes).join(", ")}`
-            );
-          }
-        } else if (command === "modernise") {
-          output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
-          window.location.href = "modern_index.html";
-        } else {
-          simulateEnterWithText(
-            commandRaw,
-            "Command not recognised. Type 'help' to see available commands."
-          );
-        }
-
-        input.value = "";
-        updateCursor();
-      }
-    });
-
-    input.addEventListener("input", updateCursor);
-
-    function updateCursor() {
-      const textWidth = getTextWidth(input.value, window.getComputedStyle(input).font);
-      cursor.style.transform = `translateX(${textWidth}px)`;
-    }
-
-    function getTextWidth(text, font) {
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      context.font = font;
-      return context.measureText(text).width;
-    }
-
-    document.body.addEventListener("click", () => input.focus());
-    updateCursor();
-
-    document.addEventListener("mouseenter", function(e) {
-      if (e.target.classList.contains("button")) {
-        const scheme = colorSchemes[currentColorScheme];
-        e.target.style.backgroundColor = scheme.primary;
-        e.target.style.color = scheme.background;
-      }
-    }, true);
-
-    document.addEventListener("mouseleave", function(e) {
-      if (e.target.classList.contains("button")) {
-        const scheme = colorSchemes[currentColorScheme];
-        e.target.style.backgroundColor = "transparent";
-        e.target.style.color = scheme.primary;
-      }
-    }, true);
-
-    document.addEventListener("click", function(e) {
-      if (e.target.classList.contains("button")) {
-        const scheme = colorSchemes[currentColorScheme];
-        // Reset this button immediately
-        setTimeout(function() {
-          // Reset ALL buttons to be sure
-          document.querySelectorAll(".button").forEach(btn => {
-            btn.style.backgroundColor = "transparent";
-            btn.style.color = scheme.primary;
-          });
-        }, 0);
-      }
-    }, true);
-
-    // 4. Add this to ensure focus doesn't keep buttons highlighted
-    window.addEventListener("blur", function() {
-      const scheme = colorSchemes[currentColorScheme];
-      // Reset all buttons when window loses focus (like when opening a new tab)
-      document.querySelectorAll(".button").forEach(btn => {
-        btn.style.backgroundColor = "transparent";
-        btn.style.color = scheme.primary;
-      });
-    });
-
-    window.addEventListener("focus", function() {
-      const scheme = colorSchemes[currentColorScheme];
-      // Also reset when focus returns to ensure clean state
-      document.querySelectorAll(".button").forEach(btn => {
-        btn.style.backgroundColor = "transparent";
-        btn.style.color = scheme.primary;
       });
     });
   </script>
