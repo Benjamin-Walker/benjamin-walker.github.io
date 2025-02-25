@@ -11,18 +11,6 @@
     --terminal-prompt: #0f0;
 }
 
-.light-mode {
-    --primary-color: #3b82f6;
-    --text-color: #1f2937;
-    --bg-color: #f9fafb;
-    --nav-bg: rgba(249, 250, 251, 0.8);
-    --card-bg: #ffffff;
-    --terminal-dark-bg: #2d333b;
-    --terminal-header-bg: #ced4da;
-    --terminal-text: #333;
-    --terminal-prompt: #0b6e31;
-}
-
 * {
     margin: 0;
     padding: 0;
@@ -444,4 +432,26 @@ footer {
   padding: 15px;
   font-family: 'Courier New', monospace;
   line-height: 1.5;
+}
+
+/* Add these styles to your CSS to indicate the terminal is clickable */
+
+/* Cursor style for clickable areas */
+.terminal-body, .terminal-header {
+  cursor: pointer;
+}
+
+/* Hover effect for the entire terminal */
+.terminal-preview.terminal-hover {
+  transform: translateY(-7px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+/* Optional: Add a subtle "Click to open" hint that appears on hover */
+.terminal-body {
+  position: relative;
+}
+
+.terminal-preview:hover .terminal-body::after {
+  opacity: 1;
 }

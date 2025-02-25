@@ -20,9 +20,6 @@
         <a href="#research">Research</a>
         <a href="#code">Code</a>
         <a href="#contact">Contact</a>
-        <button id="theme-toggle">
-          <i class="fas fa-sun"></i>
-        </button>
       </div>
     </div>
   </nav>
@@ -442,32 +439,6 @@
         type();
       }
 
-      // Function to add a new line to the terminal - IMPROVED for stable positioning
-      function addLine(isCommand = true) {
-        const line = document.createElement('div');
-        line.className = 'line';
-
-        if (isCommand) {
-          // Create a stable command line structure that won't shift during typing
-          line.innerHTML = `
-            <span class="prompt" style="color:${currentTerminalColor};">></span>
-            <span class="command" style="color:${currentTerminalColor};">&nbsp;</span>
-          `;
-
-          // Remove the non-breaking space when we start typing
-          const commandSpan = line.querySelector('.command');
-          if (commandSpan) {
-            commandSpan.style.minWidth = '1ch'; // Ensure a minimum width
-          }
-        } else {
-          line.className = 'line response';
-          line.style.color = currentTerminalColor;
-        }
-
-        terminalOutput.appendChild(line);
-        return line;
-      }
-
       // Function to add cursor line at the end - IMPROVED for stable positioning
       function addCursorLine() {
         // Remove existing cursor line if it exists
@@ -620,6 +591,42 @@
           }, 300);
         }
       });
+    });
+  </script>
+
+  <script>
+    // Add click events to terminal preview elements
+    document.addEventListener("DOMContentLoaded", function() {
+      // Get the terminal preview container
+      const terminalPreview = document.querySelector('.terminal-preview');
+      const terminalBody = document.querySelector('.terminal-body');
+      const terminalHeader = document.querySelector('.terminal-header');
+
+      if (terminalPreview && terminalBody && terminalHeader) {
+        // Make terminal body clickable
+        terminalBody.style.cursor = 'pointer';
+        terminalBody.addEventListener('click', function(e) {
+          // Only trigger if the click wasn't on a button
+          if (!e.target.classList.contains('term-btn')) {
+            window.location.href = 'cl_index.html';
+          }
+        });
+
+        // Make terminal header clickable
+        terminalHeader.style.cursor = 'pointer';
+        terminalHeader.addEventListener('click', function() {
+          window.location.href = 'retro_index.html';
+        });
+
+        // Add a subtle hover effect to indicate clickability
+        terminalPreview.addEventListener('mouseenter', function() {
+          terminalPreview.classList.add('terminal-hover');
+        });
+
+        terminalPreview.addEventListener('mouseleave', function() {
+          terminalPreview.classList.remove('terminal-hover');
+        });
+      }
     });
   </script>
 </body>
