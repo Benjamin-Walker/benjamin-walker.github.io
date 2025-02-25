@@ -161,34 +161,36 @@
     function applyColorSchemeToButtons() {
       const scheme = colorSchemes[currentColorScheme];
       const buttons = document.querySelectorAll(".button");
-      buttons.forEach((button) => {
-        const onclickHandler = button.getAttribute("onclick");
-        button.style.backgroundColor = "transparent";
-        button.style.color = scheme.primary;
-        button.style.borderColor = scheme.primary;
 
+      buttons.forEach((oldButton) => {
+        const onclickHandler = oldButton.getAttribute("onclick");
+
+        // Create new button element
         const newButton = document.createElement("button");
         newButton.className = "button";
-        newButton.innerHTML = button.innerHTML;
+        newButton.innerHTML = oldButton.innerHTML;
         if (onclickHandler) {
           newButton.setAttribute("onclick", onclickHandler);
         }
+
+        // Apply initial styling
         newButton.style.color = scheme.primary;
         newButton.style.borderColor = scheme.primary;
+        newButton.style.backgroundColor = "transparent";
 
-        const mouseenterHandler = () => {
-          newButton.style.backgroundColor = scheme.primary;
-          newButton.style.color = scheme.background;
-        };
-        const mouseleaveHandler = () => {
-          newButton.style.backgroundColor = "transparent";
-          newButton.style.color = scheme.primary;
-        };
+        // Replace the old button with the new one
+        if (oldButton.parentNode) {
+          oldButton.parentNode.replaceChild(newButton, oldButton);
+        }
+      });
+    }
 
-        newButton.addEventListener("mouseenter", mouseenterHandler);
-        newButton.addEventListener("mouseleave", mouseleaveHandler);
 
-        button.parentNode.replaceChild(newButton, button);
+    function resetAllButtonStyles() {
+      const scheme = colorSchemes[currentColorScheme];
+      document.querySelectorAll(".button").forEach(btn => {
+        btn.style.backgroundColor = "transparent";
+        btn.style.color = scheme.primary;
       });
     }
 
@@ -233,24 +235,23 @@
       }, 50);
     }
 
-    function simulateEnterWithButtons(commandOutput = "") {
-      const command = input.value;
-      output.innerHTML += `<div><span class="prompt">></span> ${command}</div>`;
-      if (commandOutput) {
-        const links =
-          "    " +
-          commandOutput
-            .split("    ")
-            .map((page) => {
-              return `<button class="button" onclick="navigateTo('${page}')">${page}</button>`;
-            })
-            .join("    ");
-        output.innerHTML += `<div>${links}</div>`;
-        applyColorSchemeToButtons();
-      }
-      input.value = "";
-      updateCursor();
-      scrollToBottom();
+    function simulateEnterWithButtons(commandOutput = "", command = input.value) {
+        output.innerHTML += `<div><span class="prompt">></span> ${command}</div>`;
+        if (commandOutput) {
+          const links =
+            "    " +
+            commandOutput
+              .split("    ")
+              .map((page) => {
+                return `<button class="button" onclick="navigateTo('${page}')">${page}</button>`;
+              })
+              .join("    ");
+          output.innerHTML += `<div>${links}</div>`;
+          applyColorSchemeToButtons();
+        }
+        input.value = "";
+        updateCursor();
+        scrollToBottom();
     }
 
     function simulateEnterWithText(command, commandOutput = "") {
@@ -265,15 +266,36 @@
     }
 
     function navigateTo(page, commandRaw = "") {
+      const scheme = colorSchemes[currentColorScheme];
+      document.querySelectorAll(".button").forEach(btn => {
+        btn.style.backgroundColor = "transparent";
+        btn.style.color = scheme.primary;
+      });
       if (commandRaw === "") {
         commandRaw = page;
+      }
+      if (["Twitter","Bluesky","LinkedIn","GitHub"].includes(page)) {
+        const socialLinks = {
+          "Twitter": social.twitter,
+          "Bluesky": social.bluesky,
+          "LinkedIn": social.linkedin,
+          "GitHub": social.github,
+        };
+        output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
+        window.open(socialLinks[page], "_blank");
+        input.focus();
+        scrollToBottom();
+        return;
       }
       if (page === "CV") {
         // open CV
         output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
         window.open(social.cv, "_blank");
+        resetAllButtonStyles();
+      } else if (page === "Social") {
+        // Instead of using simulateEnterWithText, do this:
+        simulateEnterWithButtons("Twitter    Bluesky    LinkedIn    GitHub", commandRaw);
       } else {
-        // show page text if it exists
         simulateEnterWithText(commandRaw, pageText[page] || "No data for this page.");
       }
       input.focus();
@@ -291,6 +313,7 @@
       if (command in socialLinks) {
         window.open(socialLinks[command]);
         simulateEnterWithText(commandRaw);
+        resetAllButtonStyles(); // Add this line
       }
     }
 
@@ -304,7 +327,7 @@
             changeColorScheme("slate");
             setTimeout(() => {
               typeText("pages", () => {
-                simulateEnterWithButtons("    About    CV    Research    Code    Social");
+                simulateEnterWithButtons("About    CV    Research    Code    Social");
               });
             }, 500);
           });
@@ -340,7 +363,7 @@
         if (command === "clear") {
           clearTerminal();
         } else if (command === "pages") {
-          simulateEnterWithButtons("    About    CV    Research    Code    Social");
+          simulateEnterWithButtons("About    CV    Research    Code    Social");
         } else if (command === "cv") {
           navigateTo("CV", commandRaw);
         } else if (["about", "research", "code", "social"].includes(command)) {
@@ -401,6 +424,55 @@
 
     document.body.addEventListener("click", () => input.focus());
     updateCursor();
+
+    document.addEventListener("mouseenter", function(e) {
+      if (e.target.classList.contains("button")) {
+        const scheme = colorSchemes[currentColorScheme];
+        e.target.style.backgroundColor = scheme.primary;
+        e.target.style.color = scheme.background;
+      }
+    }, true);
+
+    document.addEventListener("mouseleave", function(e) {
+      if (e.target.classList.contains("button")) {
+        const scheme = colorSchemes[currentColorScheme];
+        e.target.style.backgroundColor = "transparent";
+        e.target.style.color = scheme.primary;
+      }
+    }, true);
+
+    document.addEventListener("click", function(e) {
+      if (e.target.classList.contains("button")) {
+        const scheme = colorSchemes[currentColorScheme];
+        // Reset this button immediately
+        setTimeout(function() {
+          // Reset ALL buttons to be sure
+          document.querySelectorAll(".button").forEach(btn => {
+            btn.style.backgroundColor = "transparent";
+            btn.style.color = scheme.primary;
+          });
+        }, 0);
+      }
+    }, true);
+
+    // 4. Add this to ensure focus doesn't keep buttons highlighted
+    window.addEventListener("blur", function() {
+      const scheme = colorSchemes[currentColorScheme];
+      // Reset all buttons when window loses focus (like when opening a new tab)
+      document.querySelectorAll(".button").forEach(btn => {
+        btn.style.backgroundColor = "transparent";
+        btn.style.color = scheme.primary;
+      });
+    });
+
+    window.addEventListener("focus", function() {
+      const scheme = colorSchemes[currentColorScheme];
+      // Also reset when focus returns to ensure clean state
+      document.querySelectorAll(".button").forEach(btn => {
+        btn.style.backgroundColor = "transparent";
+        btn.style.color = scheme.primary;
+      });
+    });
   </script>
 </body>
 </html>

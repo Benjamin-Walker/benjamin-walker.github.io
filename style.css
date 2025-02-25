@@ -50,6 +50,8 @@ body {
     margin: 0 4px;
     font-family: inherit;
     font-size: inherit;
+    position: relative; /* Important for the :after pseudo-element */
+    transition: all 0.1s;
 }
 
 .button:hover {
