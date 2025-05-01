@@ -119,6 +119,14 @@ const siteContent = {
       category: "Personal Projects",
     },
   ],
+  posts: [
+    {
+      title: "The Myth of Convenience",
+      date: "2025-05-01",
+      snippet: "Getting rid of my smartphone.",
+      link: "posts/the-myth-of-convenience.html"
+    }
+  ]
 };
 
 // For browser usage

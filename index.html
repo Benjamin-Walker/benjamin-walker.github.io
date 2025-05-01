@@ -19,6 +19,7 @@
         <a href="#about">About</a>
         <a href="#research">Research</a>
         <a href="#code">Code</a>
+        <a href="#blog">Blog</a>
         <a href="#contact">Contact</a>
       </div>
     </div>
@@ -41,10 +42,10 @@
           <div class="terminal-body">
             <div class="terminal-output">
               <div class="line">
-                <span class="prompt">></span> <span class="command">Welcome to Benjamin Walker's website</span>
+                <span class="prompt"></span> <span class="command">Welcome to Benjamin Walker's website</span>
               </div>
               <div class="line">
-                <span class="prompt">></span> <span class="command typing-effect">pages</span>
+                <span class="prompt"></span> <span class="command typing-effect">pages</span>
               </div>
               <div class="line response">
                 <button class="term-btn">About</button>
@@ -54,7 +55,7 @@
                 <button class="term-btn">Social</button>
               </div>
               <div class="line">
-                <span class="prompt">></span> <span class="cursor"></span>
+                <span class="prompt"></span> <span class="cursor"></span>
               </div>
             </div>
           </div>
@@ -88,6 +89,12 @@
         <!-- Filled by JS -->
       </div>
     </section>
+
+    <!-- Blog -->
+    <section id="blog">
+      <h2>Blog</h2>
+        <div class="posts"><!-- Filled by JS --></div>
+      </div>
 
     <!-- Contact -->
     <section id="contact">
@@ -262,6 +269,40 @@
 
         projContainer.appendChild(div);
       });
+
+      // ==== BLOG SECTION ====
+      const blogContainer = document.querySelector(".posts");
+      siteContent.posts
+        .sort((a, b) => new Date(b.date) - new Date(a.date))   // newest first
+        .forEach(post => {
+          const article = document.createElement("article");
+          article.classList.add("post");
+
+          const h4 = document.createElement("h4");
+          h4.textContent = post.title;
+          article.appendChild(h4);
+
+          const meta = document.createElement("span");
+          meta.className = "post-date";
+          meta.textContent = new Date(post.date).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+          });
+          article.appendChild(meta);
+
+          const p = document.createElement("p");
+          p.textContent = post.snippet;
+          article.appendChild(p);
+
+          const a = document.createElement("a");
+          a.href = post.link;
+          a.target = "_blank";
+          a.textContent = "Read More";
+          article.appendChild(a);
+
+          blogContainer.appendChild(article);
+        });
 
       // ==== CONTACT SECTION ====
       const contactLinks = document.querySelector("#contact .social-links");
