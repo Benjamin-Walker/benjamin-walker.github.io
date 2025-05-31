@@ -29,7 +29,7 @@
     // -------------
     // LOAD CONTENT from siteContent
     // -------------
-    const { personal, social, publications, projects } = window.siteContent;
+    const { personal, social, publications, projects, posts } = window.siteContent;
 
     // Build "About" page text
     const aboutPageText = (() => {
@@ -101,6 +101,21 @@
       return lines.join("\n");
     })();
 
+    // Blog --------------------------------------------------------------
+    const blogPageText = (() => {
+      const lines = ["Recent blog posts:"]; // newest first
+      posts
+        .slice() // shallow copy
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .forEach((post, i) => {
+          const dateStr = new Date(post.date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+          lines.push(`${i + 1}. <button class='button' onclick=\"window.open('${post.link}')\">${post.title}</button>`);
+          lines.push(`   ${dateStr}`);
+          if (post.snippet) lines.push(`   ${post.snippet}`);
+        });
+      return lines.join("\n");
+    })();
+
     // Build "Social" page text from siteContent.social
     const socialPageText = (() => {
       const links = [
@@ -126,8 +141,8 @@
       About: aboutPageText,
       Research: researchPageText,
       Code: codePageText,
-      Social: socialPageText,
-      // We can dynamically load CV, but let's keep it in the "navigateTo()" logic
+      Blog: blogPageText,
+      Social: socialPageText
     };
 
     // -------------
@@ -330,7 +345,7 @@
             changeColorScheme("slate");
             setTimeout(() => {
               typeText("pages", () => {
-                simulateEnterWithButtons("About    CV    Research    Code    Social");
+                simulateEnterWithButtons("About    CV    Research    Code    Blog    Social");
               });
             }, 500);
           });
@@ -351,6 +366,7 @@
           cv: "Opens my CV in a new tab.",
           research: "Highlights some recent research.",
           code: "Lists my coding projects.",
+          blog: "Lists recent blog posts.",
           social: "Displays social media links.",
           twitter: "Opens Twitter.",
           bluesky: "Opens Bluesky.",
@@ -366,7 +382,7 @@
         if (command === "clear") {
           clearTerminal();
         } else if (command === "pages") {
-          simulateEnterWithButtons("About    CV    Research    Code    Social");
+          simulateEnterWithButtons("About    CV    Research    Code    Blog    Social");
         } else if (command === "cv") {
           navigateTo("CV", commandRaw);
         } else if (["about", "research", "code", "social"].includes(command)) {
