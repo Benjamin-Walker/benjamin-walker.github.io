@@ -46,6 +46,12 @@ const siteContent = {
   },
   publications: [
     {
+      title: "Structured Linear CDEs: Maximally Expressive and Parallel-in-Time Sequence Models",
+      conference: "pre-print",
+      authors: "B. Walker, L. Yang, N. M. Cirone, C. Salvi, T. Lyons",
+      link: "https://arxiv.org/abs/2505.17761",
+    },
+    {
       title: "Log Neural Controlled Differential Equations",
       conference: "International Conference on Machine Learning (ICML 2024)",
       authors: "B. Walker, A. D. McLeod, T. Qin, Y. Cheng, H. Li, T. Lyons",
@@ -79,6 +85,20 @@ const siteContent = {
   ],
   projects: [
     {
+      name: "DyadicTiling",
+      description: 
+        "Morton encoded dyadic cubes and points for efficient space decomposition.",
+      link: "https://github.com/Benjamin-Walker/dyadic-tiling",
+      category: "Open Source Libraries",
+    },
+    {
+      name: "Structured Linear CDEs",
+      description: 
+        "Implementation of Structured Linear Controlled Differential Equations (pre-print)",
+      link: "https://github.com/Benjamin-Walker/structured-linear-cdes",
+      category: "Machine Learning Research",
+    },
+    {
       name: "Log Neural CDEs",
       description:
         "Implementation of Log Neural Controlled Differential Equations (ICML 2024)",
@@ -97,13 +117,13 @@ const siteContent = {
       description:
         "Dual Bayesian ResNet for Heart Murmur Detection from Phonocardiograms (CinC 2022)",
       link: "https://github.com/Benjamin-Walker/heart-murmur-detection",
-      category: "Healthcare Applications",
+      category: "Machine Learning Research",
     },
     {
       name: "Diffrax Diffusion Models",
       description: "Score-based diffusion models implemented in JAX",
       link: "https://github.com/Benjamin-Walker/diffrax-diffusion-models",
-      category: "Generative Models",
+      category: "Personal Projects",
     },
     {
       name: "Live Vinyl Display",
