@@ -580,3 +580,60 @@ article a:visited,
   margin-bottom: 0.5em;  /* optional: space between list items */
 }
 
+/* ───────── Horizontal-scroll carousel (wrapper, rail & arrows) ───────── */
+
+.scroll-wrapper{
+  /* layout */
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  margin-inline:auto;
+
+  /* anchor for overlay arrows */
+  position:relative;
+}
+
+.scroll-content{
+  display:flex;
+  gap:1rem;
+  overflow-x:auto;
+  scroll-behavior:smooth;
+  flex:1 1 0;
+  padding-block-end:.25rem;
+
+  /* hide native scrollbars */
+  -ms-overflow-style:none;           /* IE */
+  scrollbar-width:none;              /* Firefox */
+}
+.scroll-content::-webkit-scrollbar{display:none;}  /* WebKit */
+
+/* arrow buttons */
+.scroll-btn{
+  position:absolute;                 /* overlay the rail */
+  top:-2rem;                         /* sit just above cards */
+
+  border:0;
+  background:transparent;
+  font-size:1.75rem;
+  line-height:1;
+  padding:.35rem .45rem;
+  color:var(--accent,currentColor);  /* falls back to theme accent */
+  cursor:pointer;
+
+  transition:transform .15s ease, opacity .15s ease;
+  z-index:1;                         /* stay above the card stack */
+}
+/* place the pair side-by-side */
+.scroll-btn.right{right:0;}
+.scroll-btn.left {right:2.5rem;}
+
+.scroll-btn:disabled{
+  opacity:.25;
+  cursor:default;
+}
+.scroll-btn:not(:disabled):hover{
+  transform:scale(1.15);
+  background:hsl(0 0% 90%/.15);
+  border-radius:.5rem;
+}
+
