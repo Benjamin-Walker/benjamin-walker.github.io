@@ -47,7 +47,7 @@ const siteContent = {
   publications: [
     {
       title: "Structured Linear CDEs: Maximally Expressive and Parallel-in-Time Sequence Models",
-      conference: "pre-print",
+      conference: "Pre-print",
       authors: "B. Walker, L. Yang, N. M. Cirone, C. Salvi, T. Lyons",
       link: "https://arxiv.org/abs/2505.17761",
     },
@@ -145,7 +145,13 @@ const siteContent = {
       date: "2025-05-01",
       snippet: "Getting rid of my smartphone.",
       link: "posts/the-myth-of-convenience.html"
-    }
+    },
+    {
+      title: "Structured Linear CDEs - Part 1",
+      date: "2025-06-02",
+      snippet: "An introduction to Structured Linear CDEs (SLiCEs).",
+      link: "posts/SLiCEs-1.html"
+    },
   ]
 };
 

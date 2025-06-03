@@ -637,3 +637,27 @@ article a:visited,
   border-radius:.5rem;
 }
 
+main.blog-post table {
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse; /* optional, for cleaner look */
+}
+
+main.blog-post th,
+main.blog-post td {
+  padding: 0.5rem 0.75rem;
+  text-align: center;      /* ← centres the text horizontally */
+  vertical-align: middle;  /* optional: centres multi-line cells vertically */
+}
+
+.post-hero {
+  margin: 1.5rem 0;
+  text-align: center;        /* centers the image */
+}
+
+.post-hero img {
+  max-width: 80%;
+  height: auto;
+  border-radius: 6px;        /* subtle rounded corners */
+}
+

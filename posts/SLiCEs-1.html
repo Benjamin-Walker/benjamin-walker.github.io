@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SLiCEs – The What</title>
+  <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="../style.css" />
+  <!-- MathJax setup -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<style>
+  .blog-post ul {
+    max-width: none;
+  }
+</style>
+<body>
+  <main class="blog-post">
+  <article>
+    <header class="post-header">
+      <h1>Structured Linear CDEs - Part 1</h1>
+      <p class="post-meta"><em>Posted on 3 June 2025</em></p>
+      <nav class="post-nav">
+        <a href="../index.html">← Back to Home</a>
+      </nav>
+    </header>
+
+    <figure class="post-hero">
+      <img src="../assets/SLiCE-Collection.jpg"
+           alt="SLiCE framework overview"
+           loading="lazy" />
+    </figure>
+
+    <h2>Introduction</h2>
+    <p>
+      This is the first in a three-part blog series on Structured Linear Controlled Differential Equations (SLiCEs), a new framework for sequence models that balance maximal expressivity with efficient parallel-in-time computation by using input-dependent structured state-transition matrices. These models were introduced in our <a href="https://arxiv.org/abs/2505.17761" target="_blank">recent preprint</a>. This series of blog posts will cover:
+    </p>
+    <ul>
+      <li><strong>The What</strong>: Understanding what SLiCEs are and how they fit within the broader sequence modelling landscape.</li>
+      <li><strong>The Why</strong>: Exploring their significance from theoretical and empirical perspectives.</li>
+      <li><strong>The How</strong>: A practical implementation in Jax.</li>
+    </ul>
+    <p>Let's dive into <strong>Part 1 - The What</strong>.</p>
+
+    <h2>Time Series Modelling</h2>
+    <p>
+      Given observations from a time series \( \{x_i\}_{i=1}^n \), a generic shallow learning method involves selecting a function \( g \) such that
+    </p>
+    <p>
+      \[ h_i = g(x_1, x_2, \ldots, x_{i-1}), \]
+    </p>
+    <p>
+      and making predictions via a fitted linear map \( C_\theta \),
+    </p>
+    <p>
+      \[ y_i \approx C_\theta h_i. \]
+    </p>
+    <p>
+      <strong>Q: Theoretically, can we match \( y_i \) as closely as we want?</strong><br />
+      <strong>A:</strong> Yes. 
+      <br />
+      <em>Spoiler:</em> Let \( g \) calculate the signature, see <a href="https://arxiv.org/abs/1309.0260" target="_blank">here</a>.
+    </p>
+    <p>
+      However, the signature captures <em>everything</em> and most problems are actually very focused. In order to tell if someone's ECG means they are dying, you don’t need to know if their heart rate matches the beat of <em>The Imperial March</em>. Therefore, learning a \( g_\theta \) to extract the useful information for your current task usually makes sense.
+    </p>
+    <p>
+      The general deep learning approach is to learn a function \( g_\theta \) and linear map \( C_\theta \) such that
+    </p>
+    <p>
+      \[
+      \begin{aligned}
+        h_i &= g_\theta(x_1, x_2, \ldots, x_{i-1}), \\
+        y_i &\approx C_\theta h_i.
+      \end{aligned}
+      \]
+    </p>
+
+    <h2>Linear Recurrent Neural Networks</h2>
+    <p>
+      Recurrent Neural Networks (RNNs) take the generic form
+    </p>
+    <p>
+      \[ h_{i+1} = h_i + g_\theta(h_i, x_i), \]
+    </p>
+    <p>
+      and linear RNNs further restrict to
+    </p>
+    <p>
+      \[ h_{i+1} = h_i + A_\theta h_i + B_\theta x_i, \]
+    </p>
+    <p>
+    where \( A_\theta \in \mathbb{R}^{d_h \times d_h} \) and \( B_\theta \in \mathbb{R}^{d_h \times d_x} \). Due to the similarity to classical state-space models, a certain class of linear RNNs are known as <a href="https://arxiv.org/abs/2111.00396" target="_blank">structured state-space models (SSMs)</a>. The simple recurrence allows for parallelisation via associative scans or convolution. However, linear RNNs are not particularly expressive, as will be explored further in <em>Part 2 - The Why</em>.
+    </p>
+
+    <h2>Linear Neural Controlled Differential Equations</h2>
+    <p>
+      Maximal expressivity (also known as universality) can be achieved by allowing the state-transition matrix to depend linearly on \( x_i \),
+    </p>
+    <p>
+      \[ h_{i+1} = h_i + \sum_{j=1}^{d_x} A^j_\theta h_i x^j_i + B_\theta x_i. \]
+    </p>
+    <p>
+      Ignoring the bias term, this is a discretisation of a linear neural controlled differential equation (LNCDE),
+    </p>
+    <p>
+      \[ \mathrm{d}h_s = \sum_{j=1}^{d_x} A^j_\theta h_s \, \mathrm{d}\omega^{x, j}_s, \]
+    </p>
+    <p>
+    where \( \omega^{x,j}_{i+1} - \omega^{x,j}_i = x^j_i \). LNCDEs are maximally expressive (see <a href="https://arxiv.org/abs/2402.19047" target="_blank">here</a>) and can still be calculated using parallel associative scans. However, their cost and parameter count grow as \( \mathcal{O}(d_\omega d_h^2) \), which limits their scalability.
+    </p>
+
+    <h3>Quick Tangent on Names</h3>
+    <p>
+    Since this modification can equivalently be viewed as $A_{\theta}$ at each time step being a linear map on the input data, these models are also known as input-dependent linear recurrent neural networks, and a large number of alternatives are detailed in Table 2 of <a href="https://arxiv.org/abs/2406.06484" target="_blank">this paper</a>. However, a more accurate name would be linear multiplicative RNNs or linear 2-RNNs, both of which are non-linear RNNs where the matrix multiplying the hidden state depends linearly on the input. See <a href="https://icml.cc/2011/papers/524_icmlpaper.pdf" target="_blank">here</a> and <a href="https://arxiv.org/abs/2406.05045" target="_blank">here</a> for examples. Personally, I'll stick to linear NCDEs, as being a mathematician inclines me towards viewing these as discretisations of continuous models.
+    </p>
+
+    <h2>Structured Linear Neural Controlled Differential Equations</h2>
+
+    <p>
+      Mamba is a LNCDE with diagonal state-transition matrices. But diagonal \( A^j_\theta \) are not maximally expressive, and empirically fail to length generalise on state-tracking tasks. SLiCEs are a framework for input-dependent structures that preserve expressivity whilst being cheaper than dense matrices.
+    </p>
+    <p>
+      <a href="https://arxiv.org/abs/2505.17761" target="_blank">Our paper</a> proposes several SLiCEs:
+    </p>
+    <ul>
+      <li><strong>DPLR-LNCDEs</strong>: Take \( A^i_\theta = D^i_\theta + \sum_{i=1}^r u^i_\theta (v^i_\theta)^\top \). Examples include DeltaNet, DeltaProduct, and Gated DeltaNet.</li>
+      <li><strong>BD-LNCDEs</strong>: Take \( A^i_\theta = \mathrm{BlockDiag}(B^i_{\theta,1}, ..., B^i_{\theta,k}) \). Block-diagonal input-dependent linear RNN is an example.</li>
+      <li><strong>S-LNCDEs</strong>: Take each \( A^i_{\theta} \) to be a sparse matrix with \( \mathcal{O}(d_h^{1 + \epsilon}) \) non-zero entries for some \( \epsilon>0 \).
+      <li><strong>WH-LNCDEs</strong>: Take \( A^i_{\theta} = H D^i_{\theta}, \) where \( H \) is a Hadamard matrix (entries \( \pm 1 \), mutually orthogonal rows).
+    </ul>
+    <p>
+      All four of these choices have been shown to be maximally expressive, DPLR-LNCDEs in <a href="https://arxiv.org/abs/2503.10799" target="_blank">this paper</a> and the other three in <a href="https://arxiv.org/abs/2505.17761" target="_blank">our paper</a>. In all likelihood, there are other choices with the same theoretical results, and maybe better empirical results, so please reach out if you have any ideas!
+    </p>
+
+    <h3>Comparison of SLiCEs</h3>
+    <p>
+      The figure at the start of this blog post is a visual comparison of dense LNCDEs (DE-LNCDEs), diagonal LNCDEs (D-LNCDEs), diagonal-plus-low-rank LNCDEs (DPLR-LNCDEs), sparse LNCDEs (S-LNCDES), Walsh--Hadamard LNCDEs (WH-LNCDEs), and block-diagonal LNCDEs (BD-LNCDEs). The table below compares the models on parameter count, computational cost, and whether they are maximally expressive (Max. Exp.). Here, $d_{h}$ is the hidden dimension, $n$ is the sequence length, $b_j$ are BD-LNCDE's block-sizes, $r$ is DPLR-LNCDE's rank, $\epsilon$ is S-LNCDE's sparsity, and for simplicity we have taken $d_{\omega}=d_h$. Parallel cost is measured as $\mathcal{O}($ scan depth $,$ cost per composition $)$ when applying a parallel associative scan.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Parameters</th>
+          <th>Recurrent Cost</th>
+          <th>Parallel Cost</th>
+          <th>Max. Exp.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>DE-LNCDEs</td><td>\( \mathcal{O}(d_h^3) \)</td><td>\( \mathcal{O}(n d_h^3) \)</td><td>\( \mathcal{O}(\log(n), d_h^3) \)</td><td>Yes</td></tr>
+        <tr><td>D-LNCDEs</td><td>\( \mathcal{O}(d_h^2) \)</td><td>\( \mathcal{O}(n d_h^2) \)</td><td>\( \mathcal{O}(\log(n), d_h^2) \)</td><td>No</td></tr>
+        <tr><td>DPLR-LNCDEs</td><td>\( \mathcal{O}(r d_h^2) \)</td><td>\( \mathcal{O}(n r d_h^2) \)</td><td>\( \mathcal{O}(\log(n), d_h^3) \)</td><td>Yes</td></tr>
+        <tr><td>S-LNCDEs</td><td>\( \mathcal{O}(d_h^{2 + \epsilon}) \)</td><td>\( \mathcal{O}(n d_h^{2 + \epsilon}) \)</td><td>\( \mathcal{O}(\log(n), d_h^3) \)</td><td>Yes</td></tr>
+        <tr><td>WH-LNCDEs</td><td>\( \mathcal{O}(d_h^2) \)</td><td>\( \mathcal{O}(n d_h^2) \)</td><td>\( \mathcal{O}(\log(n), d_h^3) \)</td><td>Yes</td></tr>
+        <tr><td>BD-LNCDEs</td><td>\( \mathcal{O}(d_h \sum_j b_j^2) \)</td><td>\( \mathcal{O}(n d_h \sum_j b_j^2) \)</td><td>\( \mathcal{O}(\log(n), d_h \sum_j b_j^2) \)</td><td>Yes</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Parallel Computation</h3>
+    As can be seen, block-diagonal LNCDE is the only maximally expressive structure that has a number of parameters, recurrent cost, and parallel associative scan cost that are strictly less than dense LNCDEs. This is due to block-diagonal matrices being closed under matrix multiplication, whereas the other choices are not. For large hidden dimensions, parallel associatve scans can incur high I/O costs, reducing their practical benefit. DeltaNet avoids this by using a chunk-wise algorithm specifically tailored for diagonal plus low rank matrices, see <a href="https://sustcsonglin.github.io/blog/2024/deltanet-2/", target="_blank">this blog post</a> for details. Given that these chunk-wise algorithms can be applied to diagonal matrices, block-diagonal LNCDE with a pre-dominantly diagonal structure (\( b_i = 1 \) for \( i = 1, . . . , k − 1 \)) followed by a small dense block (b_k=b) emerges as an attractive solution when large hidden states are necessary. This structure can leverage an efficient chunk-wise algorithm for the diagonal portion and parallel associative scans for the small dense portion, whilst still significantly boosting the expressivity, as will be explored further in <em>Part 2 - The Why</em>.
+
+    <h2>Next Time</h2>
+    <p>
+      Now that we've established what SLiCEs are, the next post will explore <strong>why</strong> they are powerful, covering both theoretical and empirical results.
+    </p>
+  </article>
+  </main>
+</body>
+</html>
+
