@@ -147,10 +147,10 @@ const siteContent = {
       link: "posts/the-myth-of-convenience.html"
     },
     {
-      title: "Structured Linear CDEs - Part 1",
-      date: "2025-06-03",
+      title: "Structured Linear CDEs",
+      date: "2025-10-24",
       snippet: "An introduction to Structured Linear CDEs (SLiCEs).",
-      link: "posts/SLiCEs-1.html"
+      link: "posts/SLiCEs.html"
     },
   ]
 };
