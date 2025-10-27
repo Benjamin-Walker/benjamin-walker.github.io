@@ -661,3 +661,20 @@ main.blog-post td {
   border-radius: 6px;        /* subtle rounded corners */
 }
 
+#about .about-content ul {
+  list-style: disc;
+  list-style-position: outside;
+  padding-left: 2.5rem;   /* actual indent */
+  margin: 0.5rem 0 1rem;   /* spacing around lists */
+}
+
+#about .about-content li {
+  margin: 0.25rem 0;
+}
+
+/* Optional: nested lists in About */
+#about .about-content ul ul {
+  list-style: circle;
+  padding-left: 1.25rem;
+}
+
