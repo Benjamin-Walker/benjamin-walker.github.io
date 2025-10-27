@@ -5,222 +5,119 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Structured Linear CDEs</title>
   <link rel="stylesheet" href="../style.css" />
+  <meta name="description" content="SLiCEs: structured, input-dependent linear CDEs that balance maximal expressivity with parallel-in-time computation." />
+  <meta property="og:title" content="Structured Linear CDEs" />
+  <meta property="og:description" content="A gentle introduction to SLiCEs — maximally expressive, parallel-in-time sequence models with structured state-transition matrices." />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary_large_image" />
   <!-- MathJax setup -->
   <script>
     window.MathJax = {
-      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], },
+      tex: { inlineMath: [["$", "$"], ['\\(', '\\)']], displayMath: [["$$", "$$"], ['\\[', '\\]']] },
       svg: { fontCache: 'global' }
     };
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style> .blog-post ul { max-width: none; } </style>
 </head>
-<style>
-  .blog-post ul {
-    max-width: none;
-  }
-</style>
 <body>
   <main class="blog-post">
   <article>
     <header class="post-header">
-      <h1>Structured Linear CDEs</h1>
+      <h1 id="top">Structured Linear CDEs</h1>
       <p class="post-meta"><em>24 October 2025</em></p>
       <p class="post-meta">
-        <a href="../archived_posts/SLiCEs-1.html" target="_blank" rel="noopener">
-          Original post from 3 June 2025
-        </a>
+        <a href="../archived_posts/SLiCEs-1.html" target="_blank" rel="noopener">Original post from 3 June 2025</a>
       </p>
-      <nav class="post-nav">
-        <a href="../index.html">← Back to Home</a>
-      </nav>
+      <nav class="post-nav"><a href="../index.html">← Back to Home</a></nav>
     </header>
 
     <figure class="post-hero">
-      <img src="../assets/SLiCE-Logo.png"
+      <img src="../assets/SLiCE-Collection.png"
            alt="SLiCE variants compared: dense, diagonal, DPLR, sparse, Walsh–Hadamard, block-diagonal"
            loading="lazy" />
+      <figcaption>SLiCE structures and their origins</figcaption>
     </figure>
 
-    <h2>Introduction</h2>
+    <h2 id="introduction">Introduction</h2>
     <p>
-      This blog post is an introduction to Structured Linear Controlled Differential Equations (SLiCEs), a framework for sequence models that balance expressivity and efficient parallel-in-time computation using structured, input-dependent state-transition matrices. These models were introduced in our <a href="https://arxiv.org/abs/2505.17761" target="_blank" rel="noopener">NeurIPS 2025 spotlight paper</a>. Let’s begin by motivating why expressivity matters in sequence models, and how SLiCEs fit into the broader landscape of linear recurrent neural networks and linear neural controlled differential equations.
+      This post is an introduction to Structured Linear Controlled Differential Equations (SLiCEs): a framework for sequence models that balance expressivity with efficient parallel-in-time computation by using structured, input-dependent state-transition matrices. This framework was introduced in our <a href="https://arxiv.org/abs/2505.17761" target="_blank" rel="noopener">NeurIPS 2025 spotlight paper</a>. We start by outlining how SLiCEs connect to linear recurrent neural networks and linear neural controlled differential equations, before motivating why expressivity matters. We then introduce SLiCEs and compare their properties, finishing with some empirical results.
     </p>
 
-    <h2>Linear Recurrent Neural Networks</h2>
+    <h2 id="linear-rnns">Linear Recurrent Neural Networks</h2>
+    <p>Given observations from a time series $\{x_i\}_{i=0}^n$, an RNN has the generic form</p>
+    <p>$$ h_{i+1} = g_\theta(h_i, x_i). $$</p>
+    <p>Linear RNNs further restrict to</p>
+    <p>$$ h_{i+1} = W_\theta h_i + B_\theta x_i = h_i + A_\theta h_i + B_\theta x_i, $$</p>
     <p>
-      Given observations from a time series $ \{x_i\}_{i=0}^n $, an RNN takes the generic form
+      where $W_\theta = I + A_\theta \in \mathbb{R}^{d_h \times d_h}$ and $B_\theta \in \mathbb{R}^{d_h \times d_x}$. Just as residual networks can be seen as an Euler discretisation of a <a href="https://arxiv.org/abs/1806.07366" target="_blank" rel="noopener">Neural ODE</a>, the linear RNN is an Euler discretisation of
     </p>
+    <p>$$ \frac{\mathrm{d}h_s}{\mathrm{d}s} = A_\theta h_s + B_\theta X_s, $$</p>
     <p>
-    $$ h_{i+1} = g_\theta(h_i, x_i), $$
+      where $X_s$ is an interpolation of the input sequence $\{x_i\}_{i=0}^n$. Due to the similarity to classical state-space models, a popular class of linear RNNs are known as <a href="https://arxiv.org/abs/2111.00396" target="_blank" rel="noopener">structured state-space models (SSMs)</a>. The simple recurrence allows for parallelisation via associative scans or convolution. However, linear RNNs are not very expressive, which motivates making the state-transition matrix depend on the input:
     </p>
+    <p>$$ \frac{\mathrm{d}h_s}{\mathrm{d}s} = A_\theta(X_s) h_s + B_\theta X_s. $$</p>
     <p>
-      where $h_i$ is the hidden state. Linear RNNs further restrict to
-    </p>
-    <p>
-      $$ h_{i+1} = W_\theta h_i + B_\theta x_i = h_i + A_\theta h_i + B_\theta x_i, $$
-    </p>
-    <p>
-    where $ W_\theta = I + A_\theta \in \mathbb{R}^{d_h \times d_h} $ and $ B_\theta \in \mathbb{R}^{d_h \times d_x} $. Just as residual neural networks can be seen as an Euler discretisation of a <a href="https://arxiv.org/abs/1806.07366" target="_blank" rel="noopener">Neural ODE</a>, the linear RNN can be seen as an Euler discretisation of
-    </p>
-    <p>
-      $$ \frac{\mathrm{d}h_s}{\mathrm{d}s} = A_\theta h_s + B_\theta X_s, $$
-    </p>
-    <p>
-    where $ X_s $ is an interpolation of the input sequence $ \{x_i\}_{i=0}^n $.
-    Due to the similarity to classical state-space models, a certain class of linear RNNs are known as <a href="https://arxiv.org/abs/2111.00396" target="_blank" rel="noopener">structured state-space models (SSMs)</a>. 
-    The simple recurrence allows for parallelisation via associative scans or convolution. However, linear RNNs are not particularly expressive. This has led to the introduction of input-dependent state-transition matrices,
-    </p>
-    <p>
-      $$ \frac{\mathrm{d}h_s}{\mathrm{d}s} = A_\theta(X_s) h_s + B_\theta X_s, $$         
-    </p>
-    <p>
-    for example in <a href="https://arxiv.org/abs/2312.00752" target="_blank" rel="noopener">Mamba</a>. Although no longer a time-invariant linear system, these models can still be computed in parallel using associative scans. The question is: how expressive are input-dependent linear RNNs?
+      For example, <a href="https://arxiv.org/abs/2312.00752" target="_blank" rel="noopener">Mamba</a> takes this approach. Although no longer time invariant, these models can still be computed in parallel using associative scans. A natural question is: How expressive are input-dependent linear RNNs?
     </p>
 
-    <h3>Quick Tangent on Names</h3>
+    <h3 id="naming">Quick Tangent on Names</h3>
     <p>
-    Models of this type are often referred to as (input-dependent) linear RNNs, and a large number of alternatives are detailed in Table 2 of <a href="https://arxiv.org/abs/2406.06484" target="_blank" rel="noopener">this paper</a>. Since these models have multiplicative interactions between $X_s$ and $h_s$, they aren't really linear RNNs. A more descriptive name might be linear multiplicative RNNs or linear 2-RNNs, both of which are non-linear RNNs where the matrix multiplying the hidden state depends linearly on the input. See <a href="https://icml.cc/2011/papers/524_icmlpaper.pdf" target="_blank" rel="noopener">here</a> and <a href="https://arxiv.org/abs/2406.05045" target="_blank" rel="noopener">here</a> for examples. This would emphasise that the “linear” refers to the absence of nonlinearities applied to the hidden state update. 
+      These models are often called (input-dependent) linear RNNs, with many variants detailed in Table 2 of <a href="https://arxiv.org/abs/2406.06484" target="_blank" rel="noopener">this paper</a>. Since the update has multiplicative interactions between $X_s$ and $h_s$, they are not linear in $(h_s, X_s)$. A more descriptive term would be linear multiplicative RNNs or linear 2-RNNs, both of which are nonlinear RNNs where the matrix multiplying the hidden state depends linearly on the input. See <a href="https://icml.cc/2011/papers/524_icmlpaper.pdf" target="_blank" rel="noopener">here</a> and <a href="https://arxiv.org/abs/2406.05045" target="_blank" rel="noopener">here</a> for examples. These names would emphasise that “linear” refers to the absence of pointwise nonlinearities on the hidden state update.
     </p>
 
-    <h2>Linear Neural Controlled Differential Equations</h2>
+    <h2 id="lncdes">Linear Neural Controlled Differential Equations</h2>
+    <p>Linear neural controlled differential equations (LNCDEs) are continuous-time models where the state-transition depends linearly on the increments of the input:</p>
+    <p>
+      $$ \mathrm{d}h_s = \sum_{j=1}^{d_\omega} A^j_\theta\, h_s\, \mathrm{d}\omega^{X, j}_s + B_\theta\, \mathrm{d}\xi^{X}_s. $$
+    </p>
+    <p>
+      Taking $\mathrm{d}\omega^{X,j}_s = X^j_s\, \mathrm{d}s$ and $\mathrm{d}\xi^X_s = X_s\, \mathrm{d}s$, we recover the input-dependent linear RNN while restricting $A_\theta$ to be linear in $X_s$. Thus, LNCDEs are the continuous-time analogue of linear 2-RNNs. As shown in <a href="https://arxiv.org/abs/2402.19047" target="_blank" rel="noopener">our NeurIPS 2024 paper</a>, linear dependence in the state transition is sufficient for maximal expressivity (universality), which answers how expressive generic input-dependent linear RNNs are. However, S4D and Mamba are special cases of LNCDEs with diagonal $A^j_\theta$; this restriction is computationally efficient but limits expressivity.
+    </p>
 
+    <h3 id="parity-example">A Simple Parity Example</h3>
+    <p>Consider a stream of bits $x_0,x_1,x_2,\dots\in\{0,1\}$ and the parity label</p>
+    <p>$$ p_n = S_n \bmod 2 \in \{0,1\}, \quad S_n = \sum_{k=0}^{n-1} x_k. $$</p>
+    <p>Whenever $x_i=1$ the label flips; if $x_i=0$ the label stays the same. Take</p>
+    <p>$$ \frac{\mathrm{d}h_s}{\mathrm{d}s} = A_\theta X_s h_s, $$</p>
+    <p>with $h_s\in\mathbb{R}^2$, piecewise constant $X_s=x_i$ for $s\in[i,i+1)$, and diagonal $A_\theta$. Then</p>
+    <p>$$ h_{n+1} = \exp\left(\begin{bmatrix} a_1 & 0 \\ 0 & a_2\end{bmatrix} x_n\right) h_n, \qquad h_n^{i}=h_0^{i} e^{a_i S_n},\ i=1,2. $$</p>
+    <p>With a linear readout $r=(r_1,r_2)^\top$ and monotone $\phi$:</p>
     <p>
-    Linear neural controlled differential equations (LNCDEs) are a class of continuous-time models where the state-transition matrix depends linearly on the increments of the input,
+      $$ \hat p_n = \phi\Big(r^\top h_n\Big) = \phi\Big(c_1 e^{a_1 S_n} + c_2 e^{a_2 S_n}\Big) = \phi\big(f(S_n)\big), \quad c_i=r_i h_0^{i}. $$
     </p>
     <p>
-    $$ \mathrm{d}h_s = \sum_{j=1}^{d_x} A^j_\theta h_s \, \mathrm{d}\omega^{X, j}_s + B_\theta \mathrm{d}\xi^{X}_s, $$
+      Since $f(S)$ has at most one turning point and $\phi$ is monotone, $\hat p_n$ crosses any fixed threshold at most twice, while $p_n$ flips every time $S_n$ increases by one. Therefore, a diagonal $A$ cannot realise parity on arbitrarily long input.
+    </p>
+    <p>Now take $A = \begin{pmatrix} 0 & \pi \\ -\pi & 0 \end{pmatrix}$. Then</p>
+    <p>
+      $$ \exp(A x_{n}) = \begin{pmatrix}1 & 0 \\ 0 & 1\end{pmatrix} \text{ if } x_{n}=0, \quad \exp(A x_{n}) = \begin{pmatrix}-1 & 0 \\ 0 & -1\end{pmatrix} \text{ if } x_{n}=1, $$
+    </p>
+    <p>so $h_{n+1} = (-1)^{x_{n}} h_n$ and hence $h_n = (-1)^{S_n} h_0$. With $r=(1,0)^\top$, $h_0^{(1)}=1$, and $\phi(s) = \big(1-\operatorname{sign}(s)\big)/2$,</p>
+    <p>$$ \hat p_n = \frac{1-\operatorname{sign}\big((-1)^{S_n}\big)}{2} = S_n \bmod 2 = p_n. $$</p>
+    <p>Therefore, a dense matrix can solve parity exactly with $d_h=2$.
     </p>
     <p>
-    with $\omega^X_s$ and $\xi^X_s$ being some functions of $X_s$. For example, if $d\omega^{X,j}_s = X^j_s ds$ and $d\xi^X_s = X_s ds$, then we recover our earlier input-dependent linear RNN, but with $A_\theta$ restricted to being a linear function of $X_s$. Hence, LNCDEs can be viewed as the continuous-time analogue to linear 2-RNNs. As shown in <a href="https://arxiv.org/abs/2402.19047" target="_blank" rel="noopener">our NeurIPS 2024 paper</a>, the linear dependence in the state-transition of LNCDEs is sufficient for maximal expressivity (also known as universality), which answers the question of how expressive generic input-dependent linear RNNs are. However, in that same paper we showed that S4D and Mamba can be seen as special cases of LNCDEs with the restriction that the $ A^j_\theta $ are diagonal. Although computationally efficient, this restriction severely limits expressivity. Here, we'll motivate this restriction in expressivity using a simple example from the appendix of our SLiCE paper.
+      However, moving from diagonal to dense matrices is impractical for large $d_h$: parameter count and compute grow from $\mathcal{O}(d_\omega d_h)$ to $\mathcal{O}(d_\omega d_h^2)$. This motivates structured alternatives that balance expressivity and efficiency, leading us to SLiCEs.
     </p>
-    <p>
-      Consider a stream of bits $x_0,x_1,x_2,\dots \in\{0,1\}$, where we want to predict the parity label defined by 
-    </p>
-    <p>
-    $$
-      p_n=S_n \bmod 2 \in\{0,1\}, \quad S_n = \sum_{k=1}^nx_k.
-    $$
-    </p>
-    <p>
-      Whenever a new bit is $1$ the label flips; if the bit is $0$ the label stays the same. 
-      Let our model be defined as
-    </p>
-    <p>
-      $$ \frac{\mathrm{d}h_s}{\mathrm{d}s} = A_\theta X_s h_s, $$
-    </p>
-    <p>
-    where $h_s \in \mathbb{R}^2$, $X_s=x_i$ for $s\in[i, i+1)$, and $A_\theta$ is diagonal. Then 
-    </p>
-    <p>
-    $$
-      h_{n+1}=\exp\left(\begin{bmatrix}a_1&0\\0&a_2\end{bmatrix} x_{n}\right)\,h_n,
-    $$
-    </p>
-    <p>
-      and
-    </p>
-    <p>
-    $$
-      h_n^{i}=h_0^{i}\exp(a_i S_n),\qquad i=1,2.
-    $$
-    </p>
-    <p>
-      With a linear read‑out $r=(r_1,r_2)^\top$ followed by a monotone activation $\phi$ (such as tanh, ReLU, sigmoid):
-    </p>
-    <p>
-    $$
-      \hat p_n=\phi\!\Bigl(r^\top h_n\Bigr)
-              =\phi\!\Bigl(c_1 e^{a_1 S_n}+c_2 e^{a_2 S_n}\Bigr)
-              =\phi\!\Bigl(f(S_n)\Bigr),\qquad
-              c_i=r_i h_0^{i}.
-    $$
-    </p>
-    <p>
-      Since $f(S)$ has at most one turning point, and $\phi$ is monotone, $\hat{p}_n$ can cross any chosen threshold at most twice. 
-      However, the true label $p_n$ flips every time $S_n\mapsto S_n+1$.
-      Hence, our diagonal matrix is not expressive enough to realise parity on arbitrarily long input.
-      Similarly, for a hidden dimension of $n$, $f(S)$ can have at most $n-1$ turning points, so no matter the hidden dimension, our model cannot realise parity on arbitrarily long input.
-      If you replace $A$ with
-    </p>
-    <p>
-    $$
-      A=\begin{pmatrix}0&\pi\\-\pi&0\end{pmatrix}.
-    $$
-    </p>
-    <p>
-      then
-    </p>
-    <p>
-    $$
-      \exp(A x_{n+1})=
-      \begin{pmatrix}
-      1&0\\0&1
-      \end{pmatrix},
-    $$
-    </p>
-    <p>
-      when $x_{n+1}=0$ and
-    </p>
-    <p>
-    $$
-      \exp(A x_{n+1})=
-      \begin{pmatrix}
-      -1&0\\0&-1
-      \end{pmatrix},
-    $$
-    </p>
-    <p>
-      when $x_{n+1} = 1$. Thus
-    </p>
-    <p>
-    $$
-      h_{n+1}=(-1)^{x_{n+1}}h_n
-    $$
-    </p>
-    <p>
-      and
-    </p>
-    <p>
-    $$
-      h_n=(-1)^{S_n}h_0.
-    $$
-    </p>
-    <p>
-      Taking $r=(1,0)^\top$, $h_0^{(1)}=1$, and $\phi(s)=\bigl(1-\operatorname{sign}(s)\bigr)/2$, 
-    </p>
-    <p>
-    $$
-      \hat p_n=\frac{1-\operatorname{sign}\bigl((-1)^{S_n}\bigr)}{2}=S_n\bmod 2=p_n.
-    $$
-    </p>
-    <p>
-      Therefore, a dense matrix is expressive enough to solve parity exactly with a hidden dimension of 2.
-    </p>
-    <p>
-    Now that we have our maximally expressive model, it may seem that our work is done. However, moving from diagonal to dense matrices is simply impractical for large hidden dimensions, as both the parameter count and computational cost grow move from $\mathcal{O}(d_h^2)$ to $ \mathcal{O}(d_h^3)$. This serves as motivation for structured alternatives that balance expressivity and efficiency, leading us to SLiCEs.
 
-
-    <h2>Structured Linear Neural Controlled Differential Equations</h2>
-
-    <p>
-      SLiCEs are a framework for input-dependent structures that preserve expressivity whilst being cheaper than dense matrices. <a href="https://arxiv.org/abs/2505.17761" target="_blank" rel="noopener">Our paper</a> proposes several SLiCEs:
-    </p>
+    <h2 id="slices">Structured Linear Neural Controlled Differential Equations</h2>
+    <p>SLiCEs replace the dense matrices of an LNCDE with structured variants that preserve expressivity while being computationally cheaper. <a href="https://arxiv.org/abs/2505.17761" target="_blank" rel="noopener">Our paper</a> proposes:</p>
     <ul>
-      <li><strong>DPLR-SLiCE</strong>: Take $ A^i_\theta = D^i_\theta + \sum_{i=1}^r u^i_\theta (v^i_\theta)^\top $. Examples include DeltaNet, DeltaProduct, and Gated DeltaNet.</li>
-      <li><strong>BD-SLiCE</strong>: Take $ A^i_\theta = \mathrm{BlockDiag}(B^i_{\theta,1}, ..., B^i_{\theta,k}) $. Block-diagonal input-dependent linear RNN is an example.</li>
-      <li><strong>S-SLiCE</strong>: Take each $ A^i_{\theta} $ to be a sparse matrix with $ \mathcal{O}(d_h^{1 + \epsilon}) $ non-zero entries for some $ \epsilon>0 $.</li>
-      <li><strong>WH-SLiCE</strong>: Take $ A^i_{\theta} = H D^i_{\theta}, $ where $ H $ is a Hadamard matrix (entries $ \pm 1 $, mutually orthogonal rows).</li>
+      <li><strong>DPLR-SLiCE</strong>: $A^i_\theta = D^i_\theta + \sum_{j=1}^r u^{i,j}_{\theta} (v^{i,j}_{\theta})^\top$. Includes DeltaNet, DeltaProduct, and Gated DeltaNet.</li>
+      <li><strong>BD-SLiCE</strong>: $A^i_\theta = \mathrm{BlockDiag}(B^i_{\theta,1},\ldots,B^i_{\theta,k})$. Includes block-diagonal input-dependent linear RNN.</li>
+      <li><strong>S-SLiCE</strong>: $A^i_\theta$ is sparse with $\mathcal{O}(d_h^{1+\epsilon})$ non-zeros for some $\epsilon>0$.</li>
+      <li><strong>WH-SLiCE</strong>: $A^i_\theta = H\, D^i_\theta$ for a (normalised) Hadamard matrix $H$.</li>
     </ul>
+    <p>All four of these choices are maximally expressive (universal), as shown for DPLR-SLiCE in <a href="https://arxiv.org/abs/2503.10799" target="_blank" rel="noopener">this paper</a>, and shown for BD, sparse, and WH-SLiCE in <a href="https://arxiv.org/abs/2505.17761" target="_blank" rel="noopener">our paper</a>.</p>
+
+    <h3 id="comparison">Comparison of SLiCEs</h3>
     <p>
-      All four of these choices are maximally expressive, as shown for DPLR-SLiCE in <a href="https://arxiv.org/abs/2503.10799" target="_blank" rel="noopener">this paper</a>, and shown for BD, sparse, and WH-SLiCE in <a href="https://arxiv.org/abs/2505.17761" target="_blank" rel="noopener">our paper</a>. This is by no means an exhaustive list of possible SLiCEs. There are likely other structures that also achieve maximal expressivity, and finding these may lead to improved empirical performance.
+      The opening figure visualises six possible structures: dense LNCDE (DE-LNCDE), diagonal SLiCE (D-SLiCE), diagonal-plus-low-rank (DPLR-SLiCE), sparse (S-SLiCE), Walsh–Hadamard (WH-SLiCE), and block-diagonal (BD-SLiCE). The table below compares parameter count, computational cost, and whether each is maximally expressive (Max. Exp.). Here $d_h$ is hidden size, $n$ sequence length, $b_j$ BD block sizes, $r$ DPLR rank, $\epsilon$ sparse exponent, and we take $d_\omega=d_h$ for simplicity. Parallel cost is measured as $\mathcal{O}(\text{scan depth, cost per composition})$ when using a parallel associative scan.
     </p>
 
-    <h3>Comparison of SLiCEs</h3>
-    <p>
-    The figure at the start of this blog post is a visual comparison of dense LNCDE (DE-LNCDE), diagonal SLiCE (D-SLiCE), diagonal-plus-low-rank SLiCE (DPLR-SLiCE), sparse SLiCE (S-SLiCE), Walsh-Hadamard SLiCE (WH-SLiCE), and block-diagonal SLiCE (BD-SLiCE). The table below compares the models on parameter count, computational cost, and whether they are maximally expressive (Max. Exp.). Here, $d_{h}$ is the hidden dimension, $n$ is the sequence length, $b_j$ are BD-SLiCE's block-sizes, $r$ is DPLR-SLiCE's rank, $\epsilon$ is S-SLiCE's sparsity, and for simplicity we have taken $d_{\omega}=d_h$. Parallel cost is measured as $\mathcal{O}(\text{scan depth, cost per composition})$ when applying a parallel associative scan.
-    </p>
-
-    <table>
+    <table aria-describedby="slice-table-caption">
+      <caption id="slice-table-caption" class="sr-only">Complexity and expressivity of SLiCE variants</caption>
       <thead>
         <tr>
           <th>Model</th>
@@ -231,56 +128,54 @@
         </tr>
       </thead>
       <tbody>
-        <tr><td>DE-LNCDE</td><td>$ \mathcal{O}(d_h^3) $</td><td>$ \mathcal{O}(n d_h^3) $</td><td>$ \mathcal{O}(\log(n), d_h^3) $</td><td>Yes</td></tr>
-        <tr><td>D-SLiCE</td><td>$ \mathcal{O}(d_h^2) $</td><td>$ \mathcal{O}(n d_h^2) $</td><td>$ \mathcal{O}(\log(n), d_h^2) $</td><td>No</td></tr>
-        <tr><td>DPLR-SLiCE</td><td>$ \mathcal{O}(r d_h^2) $</td><td>$ \mathcal{O}(n r d_h^2) $</td><td>$ \mathcal{O}(\log(n), d_h^3) $</td><td>Yes</td></tr>
-        <tr><td>S-SLiCE</td><td>$ \mathcal{O}(d_h^{2 + \epsilon}) $</td><td>$ \mathcal{O}(n d_h^{2 + \epsilon}) $</td><td>$ \mathcal{O}(\log(n), d_h^3) $</td><td>Yes</td></tr>
-        <tr><td>WH-SLiCE</td><td>$ \mathcal{O}(d_h^2) $</td><td>$ \mathcal{O}(n d_h^2) $</td><td>$ \mathcal{O}(\log(n), d_h^3) $</td><td>Yes</td></tr>
-        <tr><td>BD-SLiCE</td><td>$ \mathcal{O}(d_h \sum_j b_j^2) $</td><td>$ \mathcal{O}(n d_h \sum_j b_j^2) $</td><td>$ \mathcal{O}(\log(n), d_h \sum_j b_j^2) $</td><td>Yes</td></tr>
+        <tr><td>DE-LNCDE</td><td>$\mathcal{O}(d_h^3)$</td><td>$\mathcal{O}(n d_h^3)$</td><td>$\mathcal{O}(\log n, d_h^3)$</td><td>Yes</td></tr>
+        <tr><td>D-SLiCE</td><td>$\mathcal{O}(d_h^2)$</td><td>$\mathcal{O}(n d_h^2)$</td><td>$\mathcal{O}(\log n, d_h^2)$</td><td>No</td></tr>
+        <tr><td>DPLR-SLiCE</td><td>$\mathcal{O}(r d_h^2)$</td><td>$\mathcal{O}(n r d_h^2)$</td><td>$\mathcal{O}(\log n, d_h^3)$</td><td>Yes</td></tr>
+        <tr><td>S-SLiCE</td><td>$\mathcal{O}(d_h^{2+\epsilon})$</td><td>$\mathcal{O}(n d_h^{2+\epsilon})$</td><td>$\mathcal{O}(\log n, d_h^3)$</td><td>Yes</td></tr>
+        <tr><td>WH-SLiCE</td><td>$\mathcal{O}(d_h^2)$</td><td>$\mathcal{O}(n d_h^2)$</td><td>$\mathcal{O}(\log n, d_h^3)$</td><td>Yes</td></tr>
+        <tr><td>BD-SLiCE</td><td>$\mathcal{O}\!\left(d_h \sum_j b_j^2\right)$</td><td>$\mathcal{O}\!\left(n d_h \sum_j b_j^2\right)$</td><td>$\mathcal{O}\!\left(\log n, d_h \sum_j b_j^2\right)$</td><td>Yes</td></tr>
       </tbody>
     </table>
 
-    <h3>Parallel Computation</h3>
+    <h3 id="parallel">Parallel Computation</h3>
     <p>
-      Block-diagonal matrices are closed under multiplication, so the parallel associative scan preserves their structure. For DPLR, sparse, and WH variants, the compositions destroy this structure, leading to a dense $ \mathcal{O}(d_h^3) $ cost per composition. For large hidden dimensions, parallel associative scans can incur high I/O costs, reducing their practical benefit. DeltaNet avoids this by using a chunk-wise algorithm specifically tailored for diagonal plus low rank matrices, see <a href="https://sustcsonglin.github.io/blog/2024/deltanet-2/" target="_blank" rel="noopener">this blog post</a> for details. Given that these chunk-wise algorithms can be applied to diagonal matrices, BD-SLiCE with a predominantly diagonal structure, $ b_i = 1 $ for $ i = 1, \ldots , k − 1 $, followed by a small dense block, $b_k=b$, emerges as an attractive solution when large hidden states are necessary. This structure can leverage an efficient chunk-wise algorithm for the diagonal portion and parallel associative scans for the small dense portion, whilst still significantly boosting the expressivity. We refer to this variant as diagonal-dense SLiCE (D-DE-SLiCE).
+      Block-diagonal matrices are closed under multiplication, so the parallel associative scan preserves their structure. For DPLR, sparse, and WH, compositions destroy structure, yielding an effective $\mathcal{O}(d_h^3)$ cost per composition. Another important consideration is that for large hidden sizes, scans can incur high I/O costs, which reduces their practical benefit. DeltaNet mitigates this using a chunk-wise algorithm tailored for diagonal-plus-low-rank matrices; see <a href="https://sustcsonglin.github.io/blog/2024/deltanet-2/" target="_blank" rel="noopener">this blog post</a>. Because chunk-wise methods also apply to diagonal matrices, BD-SLiCE with a mostly diagonal structure ($b_i=1$ for $i=1,\ldots,k-1$) plus a small dense block ($b_k=b$) is an attractive option when $d_h$ is large. This variant can leverage chunk-wise updates for the diagonal part and scans for the dense part. We refer to this structure as diagonal–dense SLiCE (D-DE-SLiCE).
     </p>
 
-    <h3>Empirical Results</h3>
-
+    <h3 id="empirical">Empirical Results</h3>
     <p>
-    Here, we highlight two empirical results from the paper. First, we find that the DPLR, BD, and D-DE structure all achieve strong length generalisation on regular language tasks from the <a href="https://arxiv.org/abs/2207.02098" target="_blank" rel="noopener">Formal Language Benchmark</a>, outperforming all parallel-in-time baselines we considered.
+      Two highlights. First, DPLR, BD, and D-DE achieve strong length generalisation on regular language tasks from the <a href="https://arxiv.org/abs/2207.02098" target="_blank" rel="noopener">Formal Language Benchmark</a>, outperforming all parallel-in-time baselines we considered.
     </p>
 
     <figure class="post-hero">
       <img src="../assets/formal_language_average_accuracy.png"
            alt="Formal Language Benchmark: DPLR, BD, and D-DE show strong length generalisation"
            loading="lazy" />
+      <figcaption>Length generalisation on regular-language tasks</figcaption>
     </figure>
 
     <p>
-    Second, we find that replacing the non-linear vector field of a Log-NCDE with a block-diagonal linear vector field (BD-SLiCE) leads to the same average test accuracy with a $20\times$ reduction in average time per training step over six datasets from the <a href="https://arxiv.org/abs/1811.00075" target="_blank" rel="noopener">UEA Multivariate Time Series Classification Archive</a>.
+      Second, replacing the nonlinear vector field of a Log-NCDE with a block-diagonal linear field (BD-SLiCE) gives the same average test accuracy with a $20\times$ reduction in average time per training step over six datasets from the <a href="https://arxiv.org/abs/1811.00075" target="_blank" rel="noopener">UEA Multivariate Time Series Classification Archive</a>.
     </p>
-
 
     <figure class="post-hero">
       <img src="../assets/time_vs_acc.png"
-           alt="Training time vs accuracy: BD-SLiCE ~20× faster than Log-NCDE with similar accuracy"
+           alt="Training time vs accuracy: BD-SLiCE approximately 20× faster than Log-NCDE with similar accuracy"
            loading="lazy" />
+      <figcaption>Test accuracy against time per training step over six datasets from the UEA-MTSCA. Circle area is proportional to GPU memory usage.</figcaption>
     </figure>
 
-    <h2>Conclusion</h2>
-
+    <h2 id="conclusion">Conclusion</h2>
     <p>
-    SLiCEs provide a framework for understanding structured, input-dependent state-transition matrices that are both maximally expressive and parallel-in-time. If you want to keep learning more about them, further details, proofs of theoretical claims, and thorough experiments can be found in <a href="https://arxiv.org/abs/2505.17761" target="_blank" rel="noopener">our paper</a>. If you want to start using them, we have released an open-source implementation in both <a href="https://github.com/Benjamin-Walker/structured-linear-cdes" target="_blank" rel="noopener">PyTorch</a> and <a href="https://github.com/Benjamin-Walker/log-neural-cdes" target="_blank" rel="noopener">Jax</a>.
+    SLiCEs provide a framework for understanding structured, input-dependent state-transition matrices that are both maximally expressive and parallel-in-time. If you want to keep learning more about them, further details, proofs of theoretical claims, and thorough experiments can be found in <a href="https://arxiv.org/abs/2505.17761" target="_blank" rel="noopener">our paper</a>. If you want to start using them, we have released open-source implementations in both <a href="https://github.com/Benjamin-Walker/structured-linear-cdes" target="_blank" rel="noopener">PyTorch</a> and <a href="https://github.com/Benjamin-Walker/log-neural-cdes" target="_blank" rel="noopener">JAX</a>. 
+    </p> 
+
+    <p> As for what is next, we are currently working on efficient implementations so that we can scale SLiCEs to the billion-parameter regime. We are also interested in exploring other structured matrices that fit within the SLiCE framework, so please reach out if you have any ideas! 
     </p>
 
-    <p>
-    As for what is next, we are currently working on some efficient implementations to allow us to scale SLiCEs to the billion-parameter regime. We are also interested in exploring other structured matrices that fit within the SLiCE framework, so please reach out if you have any ideas.
-    </p>
+    <p>Thanks for reading!</p>
 
-    <p>
-    Thanks for reading!
-    </p>
+    <p><a href="#top">Back to top</a></p>
 
   </article>
   </main>

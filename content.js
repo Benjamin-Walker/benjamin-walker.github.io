@@ -42,14 +42,26 @@ const siteContent = {
     bluesky: "https://bsky.app/profile/benjamincwalker.bsky.social",
     linkedin: "https://www.linkedin.com/in/benjamin-walker-3880771b9/",
     github: "https://github.com/Benjamin-Walker",
-    cv: "CV.pdf",
+    cv: "assets/CV_Long.pdf",
   },
   publications: [
     {
       title: "Structured Linear CDEs: Maximally Expressive and Parallel-in-Time Sequence Models",
-      conference: "Pre-print",
+      conference: "Spotlight at Neural Information Processing Systems (NeurIPS 2025)",
       authors: "B. Walker, L. Yang, N. M. Cirone, C. Salvi, T. Lyons",
       link: "https://arxiv.org/abs/2505.17761",
+    },
+    {
+      title: "Permutation Equivariant NCDEs for Dynamic Graph Representation Learning",
+      conference: "Neural Information Processing Systems (NeurIPS 2025)",
+      authors: "T. Berndt, B. Walker, T. Qin, J. Stühmer, A. Kormilitzin",
+      link: "https://arxiv.org/abs/2506.20324",
+    },
+    {
+      title: "Learning Dynamic Graph Embeddings with NCDEs",
+      conference: "Transactions on Pattern Analysis and Machine Intelligence (TPAMI 2025)",
+      authors: "T. Qin, B. Walker, T. Lyons, H. Yan, H. Li",
+      link: "https://arxiv.org/abs/2302.11354",
     },
     {
       title: "Log Neural Controlled Differential Equations",
@@ -94,7 +106,7 @@ const siteContent = {
     {
       name: "Structured Linear CDEs",
       description: 
-        "Implementation of Structured Linear Controlled Differential Equations (pre-print)",
+        "Implementation of Structured Linear Controlled Differential Equations (NeurIPS 2025)",
       link: "https://github.com/Benjamin-Walker/structured-linear-cdes",
       category: "Machine Learning Research",
     },
