@@ -296,12 +296,7 @@
         scrollToBottom();
         return;
       }
-      if (page === "CV") {
-        // open CV
-        output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
-        window.open(social.cv, "_blank");
-        resetAllButtonStyles();
-      } else if (page === "Social") {
+      if (page === "Social") {
         // Instead of using simulateEnterWithText, do this:
         simulateEnterWithButtons("Twitter    Bluesky    LinkedIn    GitHub", commandRaw);
       } else {
@@ -345,7 +340,7 @@
             changeColorScheme("slate");
             setTimeout(() => {
               typeText("pages", () => {
-                simulateEnterWithButtons("About    CV    Research    Code    Blog    Social");
+                simulateEnterWithButtons("About    Research    Code    Blog    Social");
               });
             }, 500);
           });
@@ -363,7 +358,6 @@
         const commands = {
           pages: "Displays all available pages.",
           about: "Who I am and what I do",
-          cv: "Opens my CV in a new tab.",
           research: "Highlights some recent research.",
           code: "Lists my coding projects.",
           blog: "Lists recent blog posts.",
@@ -382,9 +376,7 @@
         if (command === "clear") {
           clearTerminal();
         } else if (command === "pages") {
-          simulateEnterWithButtons("About    CV    Research    Code    Blog    Social");
-        } else if (command === "cv") {
-          navigateTo("CV", commandRaw);
+          simulateEnterWithButtons("About    Research    Code    Blog    Social");
         } else if (["about", "research", "code", "social"].includes(command)) {
           navigateTo(command.charAt(0).toUpperCase() + command.slice(1), commandRaw);
         } else if (["twitter", "bluesky", "linkedin", "github"].includes(command)) {

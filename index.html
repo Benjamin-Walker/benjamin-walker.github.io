@@ -49,7 +49,6 @@
               </div>
               <div class="line response">
                 <button class="term-btn">About</button>
-                <button class="term-btn">CV</button>
                 <button class="term-btn">Research</button>
                 <button class="term-btn">Code</button>
                 <button class="term-btn">Social</button>
@@ -157,11 +156,6 @@
         const i = document.createElement("i"); i.className = icon;
         a.appendChild(i); heroSocialLinks.appendChild(a);
       });
-      /* CV */
-      const cvLink = document.createElement("a");
-      cvLink.href = social.cv; cvLink.target = "_blank";
-      cvLink.classList.add("cv-button"); cvLink.textContent = "CV";
-      heroSocialLinks.appendChild(cvLink);
 
       /* ——— ABOUT ——— */
       const aboutContainer = document.querySelector(".about-content");
@@ -366,7 +360,6 @@
         {
           response: `<div style="color:#60a5fa;">
             <button class="term-btn" style="color:#60a5fa; border-color:#60a5fa;">About</button>
-            <button class="term-btn" style="color:#60a5fa; border-color:#60a5fa;">CV</button>
             <button class="term-btn" style="color:#60a5fa; border-color:#60a5fa;">Research</button>
             <button class="term-btn" style="color:#60a5fa; border-color:#60a5fa;">Code</button>
             <button class="term-btn" style="color:#60a5fa; border-color:#60a5fa;">Social</button>
