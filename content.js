@@ -1,11 +1,11 @@
 const siteContent = {
   personal: {
     name: "Benjamin Walker",
-    title: "PhD Student in Mathematics at Oxford University",
+    title: "Co-founder and CEO at Continuous Intelligence",
     currentPosition:
-      "I am a PhD student in Mathematics at the University of Oxford, supervised by Terry Lyons. I currently hold a Lectureship in Applied Mathematics at Balliol College.",
+      'I am the Co-founder and CEO of <a href="https://www.continuousintelligence.co.uk/" target="_blank" rel="noopener noreferrer">Continuous Intelligence</a>, a London-based AI lab building foundation models for real-world time-series data. Previously, I completed my DPhil in Mathematics at the University of Oxford, supervised by Terry Lyons, and worked there as a postdoctoral researcher.',
     researchFocus:
-      "My research focuses on machine learning for sequential data, particularly in developing theoretically principled approaches to time series modeling. Additional interests include generative modelling and machine learning in healthcare.",
+      "My research focuses on continuous-time machine learning: developing expressive and efficient models that learn directly from irregular, asynchronous streams of data. At Continuous Intelligence, I am taking this work into foundation models for time series. My interests also include state tracking, generative modelling, and machine learning in healthcare.",
     education: [
       {
         degree: "DPhil Mathematics",
@@ -26,7 +26,7 @@ const siteContent = {
       },
     ],
     teaching: [
-      "Lecturer in Applied Mathematics at Balliol College",
+      "Former Lecturer in Applied Mathematics at Balliol College",
       "Course Author and Teacher for the MSc in MMSC Introduction to Python",
       "Supervised multiple Master's theses, including a prize-winning dissertation and work published at Machine Learning for Healthcare"
     ],
@@ -39,12 +39,42 @@ const siteContent = {
   },
   social: {
     twitter: "https://twitter.com/ML_BenWalker",
-    bluesky: "https://bsky.app/profile/benjamincwalker.bsky.social",
     linkedin: "https://www.linkedin.com/in/benjamin-walker-3880771b9/",
     github: "https://github.com/Benjamin-Walker",
     cv: "assets/CV_Long.pdf",
   },
   publications: [
+    {
+      title: "Time Flies When You Parallelise: Pareto-efficient Time Series Foundation Models with Linear Recurrences",
+      conference: "Neural Information Processing Systems (NeurIPS 2026)",
+      authors: "T. Berndt, L. Yang, AJ Shears, B. Walker",
+      link: "https://www.continuousintelligence.co.uk/news/continuous-intelligence-six-papers-neurips-2026/",
+      linkLabel: "Read Announcement",
+    },
+    {
+      title: "Faithful Embeddings of Irregular and Asynchronous Data for Online Log-NCDEs",
+      conference: "Neural Information Processing Systems (NeurIPS 2026)",
+      authors: "B. Walker, A. Bloch, L. Yang, S. Morley, T. Lyons",
+      link: "https://arxiv.org/abs/2605.30213",
+    },
+    {
+      title: "Universal Time Series Generation with Neural Controlled Differential Equations",
+      conference: "Neural Information Processing Systems (NeurIPS 2026)",
+      authors: "T. Berndt, E. Farjallah, L. Seute, R. Saqur, B. Walker, J. Stühmer",
+      link: "https://arxiv.org/abs/2605.28507",
+    },
+    {
+      title: "Chess-World-Model: A 10M-Game Benchmark for Exact State Tracking from Chess Move Sequences",
+      conference: "Neural Information Processing Systems (NeurIPS 2026)",
+      authors: "B. Walker, T. Lyons",
+      link: "https://arxiv.org/abs/2605.30100",
+    },
+    {
+      title: "Extending SSMs with the Exponentially Weighted Signature",
+      conference: "Preprint (2026)",
+      authors: "A. Bloch, B. Walker, J. Mouterde, S. Morley, S. N. Cohen, T. Lyons",
+      link: "https://arxiv.org/abs/2603.19198",
+    },
     {
       title: "Structured Linear CDEs: Maximally Expressive and Parallel-in-Time Sequence Models",
       conference: "Spotlight at Neural Information Processing Systems (NeurIPS 2025)",
@@ -97,13 +127,6 @@ const siteContent = {
   ],
   projects: [
     {
-      name: "DyadicTiling",
-      description: 
-        "Morton encoded dyadic cubes and points for efficient space decomposition.",
-      link: "https://github.com/Benjamin-Walker/dyadic-tiling",
-      category: "Open Source Libraries",
-    },
-    {
       name: "Structured Linear CDEs",
       description: 
         "Implementation of Structured Linear Controlled Differential Equations (NeurIPS 2025)",
@@ -132,6 +155,13 @@ const siteContent = {
       category: "Machine Learning Research",
     },
     {
+      name: "DyadicTiling",
+      description:
+        "Morton encoded dyadic cubes and points for efficient space decomposition.",
+      link: "https://github.com/Benjamin-Walker/dyadic-tiling",
+      category: "Open Source Libraries",
+    },
+    {
       name: "Diffrax Diffusion Models",
       description: "Score-based diffusion models implemented in JAX",
       link: "https://github.com/Benjamin-Walker/diffrax-diffusion-models",
@@ -152,6 +182,12 @@ const siteContent = {
     },
   ],
   posts: [
+    {
+      title: "Making Continuous Intelligence a Reality",
+      date: "2026-11-01",
+      snippet: "Founding a company to pursue my technical dreams.",
+      link: "posts/making-continuous-intelligence-a-reality.html"
+    },
     {
       title: "The Myth of Convenience",
       date: "2025-05-01",

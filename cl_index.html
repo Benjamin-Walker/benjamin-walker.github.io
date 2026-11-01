@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ben's Website</title>
+  <title>Ben Walker | Command Line</title>
+  <meta name="description" content="Explore Benjamin Walker's research and writing. Co-founder and CEO at Continuous Intelligence, building foundation models for time-series data." />
   <link rel="stylesheet" href="cl_style.css" />
 </head>
 <body>
@@ -60,9 +61,7 @@
     // Build "Research" page text from publications
     const researchPageText = (() => {
       const lines = [];
-      lines.push(
-        "My research interests include time series, neural differential equations, generative modeling, and machine learning in healthcare."
-      );
+      lines.push(personal.researchFocus);
       lines.push("My recent publications include:");
       publications.forEach((pub, idx) => {
         lines.push(
@@ -72,6 +71,7 @@
         );
         lines.push(`   ${pub.conference}`);
         lines.push(`   Authors: ${pub.authors}`);
+        if (pub.linkLabel) lines.push(`   Link: ${pub.linkLabel}`);
       });
       return lines.join("\n");
     })();
@@ -120,7 +120,6 @@
     const socialPageText = (() => {
       const links = [
         { label: "Twitter", url: social.twitter },
-        { label: "Bluesky", url: social.bluesky },
         { label: "LinkedIn", url: social.linkedin },
         { label: "GitHub", url: social.github },
       ];
@@ -283,10 +282,9 @@
       if (commandRaw === "") {
         commandRaw = page;
       }
-      if (["Twitter","Bluesky","LinkedIn","GitHub"].includes(page)) {
+      if (["Twitter","LinkedIn","GitHub"].includes(page)) {
         const socialLinks = {
           "Twitter": social.twitter,
-          "Bluesky": social.bluesky,
           "LinkedIn": social.linkedin,
           "GitHub": social.github,
         };
@@ -298,7 +296,7 @@
       }
       if (page === "Social") {
         // Instead of using simulateEnterWithText, do this:
-        simulateEnterWithButtons("Twitter    Bluesky    LinkedIn    GitHub", commandRaw);
+        simulateEnterWithButtons("Twitter    LinkedIn    GitHub", commandRaw);
       } else {
         simulateEnterWithText(commandRaw, pageText[page] || "No data for this page.");
       }
@@ -310,7 +308,6 @@
       const command = commandRaw.toLowerCase();
       const socialLinks = {
         twitter: social.twitter,
-        bluesky: social.bluesky,
         linkedin: social.linkedin,
         github: social.github,
       };
@@ -363,7 +360,6 @@
           blog: "Lists recent blog posts.",
           social: "Displays social media links.",
           twitter: "Opens Twitter.",
-          bluesky: "Opens Bluesky.",
           linkedin: "Opens LinkedIn.",
           github: "Opens GitHub.",
           colour: "Change the colour scheme (colour [green|slate|...]).",
@@ -377,9 +373,9 @@
           clearTerminal();
         } else if (command === "pages") {
           simulateEnterWithButtons("About    Research    Code    Blog    Social");
-        } else if (["about", "research", "code", "social"].includes(command)) {
+        } else if (["about", "research", "code", "blog", "social"].includes(command)) {
           navigateTo(command.charAt(0).toUpperCase() + command.slice(1), commandRaw);
-        } else if (["twitter", "bluesky", "linkedin", "github"].includes(command)) {
+        } else if (["twitter", "linkedin", "github"].includes(command)) {
           handleSocialCommand(commandRaw);
         } else if (command === "exit") {
           output.innerHTML += `<div><span class="prompt">></span> ${commandRaw}</div>`;
