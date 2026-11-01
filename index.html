@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark light" />
-  <title>Ben Walker | Mathematics & Machine Learning</title>
+  <title>Ben Walker | Co-founder and CEO at Continuous Intelligence</title>
+  <meta name="description" content="Benjamin Walker, Co-founder and CEO at Continuous Intelligence. Research in continuous-time machine learning, time-series foundation models, and state tracking." />
   <link rel="stylesheet" href="style.css" />
   <link
     rel="stylesheet"
@@ -126,7 +127,7 @@
   </main>
 
   <footer>
-    <p>© 2025 Ben Walker</p>
+    <p>© 2026 Ben Walker</p>
   </footer>
 
   <!-- 1. Include content.js so siteContent is available -->
@@ -146,7 +147,6 @@
 
       const socialIcons = [
         { icon: "fab fa-twitter", link: social.twitter },
-        { icon: "fab fa-bluesky", link: social.bluesky },
         { icon: "fab fa-github", link: social.github },
         { icon: "fab fa-linkedin", link: social.linkedin },
       ];
@@ -182,7 +182,7 @@
           <div class="publication">
             <h4>${pub.title}</h4>
             <p>${pub.conference}</p>
-            <a href="${pub.link}" target="_blank">View Paper</a>
+            <a href="${pub.link}" target="_blank" rel="noopener noreferrer">${pub.linkLabel || "View Paper"}</a>
           </div>`);
       });
 
@@ -297,7 +297,7 @@
 
         // Step 3: Show about response
         {
-          response: `<div style="color:#0f0;">PhD Student in Mathematics at Oxford University</div>`,
+          response: `<div style="color:#0f0;">${window.siteContent.personal.title}</div>`,
           delay: 10
         },
 

@@ -542,6 +542,14 @@ footer {
   margin-bottom: 1rem;
 }
 
+.post-nav {
+  position: static;
+  width: auto;
+  background: transparent;
+  backdrop-filter: none;
+  padding: 0;
+}
+
 .post-nav a {
   color: var(--primary-color);
   font-weight: 500;
@@ -553,19 +561,21 @@ footer {
   text-decoration: underline;
 }
 
-article a, .post a {
+article a, .post a, .about-content a {
   color: var(--primary-color);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 article a:hover,
-.post a:hover {
+.post a:hover,
+.about-content a:hover {
   text-decoration: underline;
 }
 
 article a:visited,
-.post a:visited {
+.post a:visited,
+.about-content a:visited {
   color: var(--primary-color);
 }
 
